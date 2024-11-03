@@ -1,0 +1,59 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/form.css">
+    <link rel="stylesheet" href="/css/producto.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    <main class="container mt-4">
+        <form action="/admin/<% if (modoEdicion) { %>editar-producto<% } else { %>crear-producto<% } %>" method="POST" class="p-4 border rounded">
+            <!-- Campo Nombre -->
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" name="nombre" id="nombre" value="<% if (modoEdicion) { %><%= producto.nombre %><% } %>">
+            </div>
+            
+            <!-- Campo URL Imagen -->
+            <div class="mb-3">
+                <label for="urlImagen" class="form-label">URL Imagen</label>
+                <input type="text" class="form-control" name="urlImagen" id="urlImagen" value="<% if (modoEdicion) { %><%= producto.urlImagen %><% } %>">
+            </div>
+    
+            <!-- Campo Precio -->
+            <div class="mb-3">
+                <label for="precio" class="form-label">Precio</label>
+                <input type="number" class="form-control" name="precio" id="precio" step="0.01" value="<% if (modoEdicion) { %><%= producto.precio.toFixed(2) %><% } %>">
+            </div>
+    
+            <!-- Campo Categoria -->
+            <div class="mb-3">
+                <label for="categoria" class="form-label">Categoría</label>
+                <input type="text" class="form-control" name="categoria" id="categoria" value="<% if (modoEdicion) { %><%= producto.categoria %><% } %>">
+            </div>
+    
+            <!-- Campo Color -->
+            <div class="mb-3">
+                <label for="color" class="form-label">Color</label>
+                <input type="text" class="form-control" name="color" id="color" value="<% if (modoEdicion) { %><%= producto.color %><% } %>">
+            </div>
+            
+            <!-- Campo Descripción -->
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" name="descripcion" id="descripcion" rows="5"><% if (modoEdicion) { %><%= producto.descripcion %><% } %></textarea>
+            </div>
+    
+            <!-- Campo oculto para el ID si está en modo edición -->
+            <% if (modoEdicion) { %>
+                <input type="hidden" value="<%= producto._id %>" name="idProducto">
+            <% } %>
+    
+            <!-- Botón de Envío -->
+            <button class="btn btn-primary" type="submit">
+                <% if (modoEdicion) { %>Actualizar Producto<% } else { %>Crear Producto<% } %>
+            </button>
+        </form>
+    </main>
+    
+
+<%- include('../includes/end.ejs') %>

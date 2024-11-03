@@ -1,0 +1,50 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/form.css">
+    <link rel="stylesheet" href="/css/producto.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    <main class="container mt-4">
+        <form action="/admin/<% if (modoEdicion) { %>editar-usuario<% } else { %>crear-usuario<% } %>" method="POST" class="p-4 border rounded">
+            <!-- Campo Nombre -->
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" name="nombre" id="nombre" value="<% if (modoEdicion) { %><%= usuario.nombre %><% } %>">
+            </div>
+            
+            <!-- Campo Tipo de Usuario -->
+            <div class="mb-3">
+                <label for="role" class="form-label">Tipo de usuario</label>
+                <select name="role" id="role" class="form-select">
+                    <option value="admin" <% if (modoEdicion && usuario.role === 'admin') { %>selected<% } %>>Admin</option>
+                    <option value="user" <% if (modoEdicion && usuario.role === 'user') { %>selected<% } %>>User</option>
+                </select>
+            </div>
+    
+            <!-- Campo Email -->
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" id="email" value="<% if (modoEdicion) { %><%= usuario.email %><% } %>">
+            </div>
+    
+            <!-- Campo Password -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="text" class="form-control" name="password" id="password" value="<% if (modoEdicion) { %><%= usuario.password %><% } %>">
+            </div>
+    
+            <!-- Campo oculto para el ID si está en modo edición -->
+            <% if (modoEdicion) { %>
+                <input type="hidden" value="<%= usuario._id %>" name="idUsuario">
+            <% } %>
+    
+            <!-- Botón de Envío -->
+            <button class="btn btn-primary" type="submit">
+                <% if (modoEdicion) { %>Actualizar Usuario<% } else { %>Crear Usuario<% } %>
+            </button>
+        </form>
+    </main>
+    
+
+<%- include('../includes/end.ejs') %>

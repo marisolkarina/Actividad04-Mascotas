@@ -1,0 +1,22 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/producto.css">
+    <link rel="stylesheet" href="/css/main.css">
+<body>
+    <main>
+        <%- include('../includes/navigation.ejs') %>
+        
+        <h5>Bienvenido <%= usuario.nombre %></h5>
+        
+        <p>Detalles de la cuenta: </p>
+        <p>Role: <%= usuario.role %></p>
+        <p>Email: <%= usuario.email %></p>
+        <p>Password: <%= usuario.password %></p>
+
+        <!-- <form action="/pedidos" method="POST">
+            <input type="hidden" value="<%= usuario._id %>" name="idUsuario">
+            <button class="btn btn-verde">Ver mis pedidos</button>
+        </form> -->
+        
+    </main>
+
+<%- include('../includes/end.ejs') %>
