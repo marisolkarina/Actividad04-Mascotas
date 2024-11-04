@@ -6,6 +6,7 @@
 <body>
     <%- include('../includes/navigation.ejs') %>
     <main class="container mt-4">
+        <%if (autenticado) { %>
         <form action="/admin/<% if (modoEdicion) { %>editar-producto<% } else { %>crear-producto<% } %>" method="POST" class="p-4 border rounded">
             <!-- Campo Nombre -->
             <div class="mb-3">
@@ -53,6 +54,9 @@
                 <% if (modoEdicion) { %>Actualizar Producto<% } else { %>Crear Producto<% } %>
             </button>
         </form>
+        <% } else { %>
+            <h1>No estás autenticado</h1>
+        <% } %>
     </main>
     
 

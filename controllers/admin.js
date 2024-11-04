@@ -11,8 +11,9 @@ exports.getProductos = (req, res) => {
         .then((productos) => {
             res.render('admin/productos', {
                 prods: productos,
-                titulo: "Administracion de Productos", 
-                path: "/admin/productos"
+                titulo: "Administracion de Productos",
+                path: "/admin/productos",
+                autenticado: req.session.autenticado
             });
         }).catch((err) => {
             console.log(err);
@@ -21,9 +22,10 @@ exports.getProductos = (req, res) => {
 };
 
 exports.getCrearProducto = (req, res) => {
-    res.render('admin/crear-editar-producto', { 
-        titulo: 'Crear Producto', 
+    res.render('admin/crear-editar-producto', {
+        titulo: 'Crear Producto',
         path: '/admin/crear-producto',
+        autenticado: req.session.autenticado,
         modoEdicion: false
     })
 };
@@ -37,12 +39,12 @@ exports.postCrearProducto = (req, res) => {
     const categoria = req.body.categoria;
     const color = req.body.color;
 
-    const producto = new Producto({ 
-        nombre: nombre, 
-        urlImagen: urlImagen, 
-        descripcion: descripcion, 
-        precio: precio, 
-        categoria: categoria, 
+    const producto = new Producto({
+        nombre: nombre,
+        urlImagen: urlImagen,
+        descripcion: descripcion,
+        precio: precio,
+        categoria: categoria,
         color: color,
         idUsuario: req.usuario._id
     });
@@ -68,11 +70,12 @@ exports.getEditarProducto = (req, res) => {
             if (!producto) {
                 return res.redirect('/admin/productos');
             }
-            res.render('admin/crear-editar-producto', { 
-                titulo: 'Editar Producto', 
+            res.render('admin/crear-editar-producto', {
+                titulo: 'Editar Producto',
                 path: '/admin/editar-producto',
                 producto: producto,
                 modoEdicion: true,
+                autenticado: req.session.autenticado
             })
         }).catch((err) => {
             console.log(err);
@@ -119,7 +122,7 @@ exports.postEliminarProducto = (req, res, next) => {
         }).catch((err) => {
             console.log(err);
         });
-    
+
 };
 
 
@@ -129,8 +132,9 @@ exports.getUsuarios = (req, res) => {
         .then((usuarios) => {
             res.render('admin/usuarios', {
                 users: usuarios,
-                titulo: "Administracion de Usuarios", 
-                path: "/admin/usuarios"
+                titulo: "Administracion de Usuarios",
+                path: "/admin/usuarios",
+                autenticado: req.session.autenticado
             });
         }).catch((err) => {
             console.log(err);
@@ -139,10 +143,11 @@ exports.getUsuarios = (req, res) => {
 };
 
 exports.getCrearUsuario = (req, res) => {
-    res.render('admin/crear-editar-usuario', { 
-        titulo: 'Crear usuario', 
+    res.render('admin/crear-editar-usuario', {
+        titulo: 'Crear usuario',
         path: '/crear-usuario',
-        modoEdicion: false
+        modoEdicion: false,
+        autenticado: req.session.autenticado
     })
 };
 
@@ -153,12 +158,12 @@ exports.postCrearUsuario = (req, res) => {
     const password = req.body.password;
     const role = req.body.role;
 
-    const usuario = new Usuario({ 
-        nombre: nombre, 
+    const usuario = new Usuario({
+        nombre: nombre,
         email: email,
         password: password,
         role: role,
-        carrito: {items: [], precioTotal: 0}
+        carrito: { items: [], precioTotal: 0 }
     });
 
     usuario
@@ -181,11 +186,12 @@ exports.getEditarUsuario = (req, res) => {
             if (!usuario) {
                 return res.redirect('/admin/usuarios');
             }
-            res.render('admin/crear-editar-usuario', { 
-                titulo: 'Editar Usuario', 
+            res.render('admin/crear-editar-usuario', {
+                titulo: 'Editar Usuario',
                 path: '/admin/editar-usuario',
                 usuario: usuario,
                 modoEdicion: true,
+                autenticado: req.session.autenticado
             })
         }).catch((err) => {
             console.log(err);
@@ -242,6 +248,7 @@ exports.getPedidos = (req, res) => {
                 path: '/admin/pedidos',
                 titulo: 'Todos los pedidos',
                 pedidos: pedidos,
+                autenticado: req.session.autenticado
             })
         }).catch((err) => {
             console.log(err);
@@ -257,10 +264,11 @@ exports.getEditarPedido = (req, res) => {
             if (!pedido) {
                 return res.redirect('/admin/pedidos');
             }
-            res.render('admin/editar-pedido', { 
-                titulo: 'Editar Pedido', 
+            res.render('admin/editar-pedido', {
+                titulo: 'Editar Pedido',
                 path: '/admin/editar-pedido',
                 pedido: pedido,
+                autenticado: req.session.autenticado
             })
         }).catch((err) => {
             console.log(err);
@@ -275,7 +283,7 @@ exports.postEditarPedido = (req, res, next) => {
 
     Pedido.findById(idPedido)
         .then((pedido) => {
-            console.log("Precio total del pedido: "+pedido.precioTotal);
+            console.log("Precio total del pedido: " + pedido.precioTotal);
 
             for (let i = 0; i < pedido.productos.length; i++) {
                 const nuevaCantidad = parseInt(req.body[`cantidadProducto${i}`], 10);
@@ -287,9 +295,9 @@ exports.postEditarPedido = (req, res, next) => {
                 }
 
                 const precio = pedido.productos[i].producto.precio;
-                pedido.precioTotal = pedido.precioTotal - precio*cantidadAnterior + precio*nuevaCantidad;
+                pedido.precioTotal = pedido.precioTotal - precio * cantidadAnterior + precio * nuevaCantidad;
             }
-            
+
             pedido.estado = estado;
             pedido.fechaEntrega = fechaEntrega;
             return pedido.save();

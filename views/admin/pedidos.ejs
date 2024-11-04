@@ -8,7 +8,7 @@
         
         <h1>Lista de pedidos</h1>
 
-        <% if (pedidos.length > 0) { %>
+        <% if (pedidos.length > 0 && autenticado){ %>
             
             <table class="table table-striped">
                 <thead>
@@ -37,16 +37,20 @@
                             </td>
                             <td> <%= pedido.usuario.nombre %> </td>
                             <td> <%= pedido.estado %> </td>
+                            <%if (autenticado) { %>
                             <td>
                                 <a href="/admin/editar-pedido/<%= pedido._id %>" class="btn btn-warning mb-2">Editar pedido</a>
                             </td>
+                            <% } else { %>
+                                <h1>No estás autenticado</h1>
+                            <% } %>
                         </tr>
                         
                     <% } %>               
                 </tbody>
             </table>
         <% } else { %>
-            <h1>No hay pedidos</h1>
+            <h1>No hay pedidos/no estas autentificado</h1>
         <% } %>
 
 

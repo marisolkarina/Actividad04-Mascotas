@@ -6,6 +6,7 @@ const Pedido = require("../models/pedido");
 // Controlador para mostrar la página de login
 
 exports.getLogin = (req, res) => {
+    console.log(req.session.autenticado);
     res.render('login', {
         titulo: 'Login',
         path: '/login',
@@ -15,10 +16,10 @@ exports.getLogin = (req, res) => {
 
 // Controlador para procesar el inicio de sesión
 exports.postLogin = (req, res) => {
-
+    
     const email = req.body.email;
     const password = req.body.password;
-
+    
     Usuario.findOne({ email: email, password: password })
         .then((usuario) => {
             if (!usuario) {
@@ -30,8 +31,16 @@ exports.postLogin = (req, res) => {
             }
 
             if (usuario.role === 'admin') {
-                res.redirect('/admin/productos');
+                req.session.autenticado=true;
+                req.session.usuario=usuario;
+                return req.session.save(err => {
+                    console.log(err);
+                    res.redirect('/admin/productos');
+                  })
+                
             } else {
+                // req.session.autenticado=true;
+                // req.session.usuario=usuario;
                 res.render('user/index', {
                     titulo: 'Mi cuenta',
                     path: '/mi-cuenta',
@@ -60,7 +69,6 @@ exports.getRecuperarContraseña = (req, res) => {
 exports.postRecuperarContraseña = (req, res) => {
 
     const email = req.body.email;
-
     Usuario.findOne({ email: email })
         .then((usuario) => {
             if (!usuario) {

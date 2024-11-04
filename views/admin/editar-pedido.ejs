@@ -6,6 +6,7 @@
 <body>
     <%- include('../includes/navigation.ejs') %>
     <main class="container mt-4">
+        <%if (autenticado) { %>
         <form action="/admin/editar-pedido" method="POST" class="p-4 border rounded">
             <!-- Campo Productos -->
             <% pedido.productos.forEach((prod, index) => {%>
@@ -41,10 +42,15 @@
             <input type="hidden" value="<%= pedido._id %>" name="idPedido">
     
             <!-- Botón de Envío -->
+            
             <button class="btn btn-primary" type="submit">
                 Guardar cambios
             </button>
+           
         </form>
+        <% } else { %>
+            <h1>No estás autenticado</h1>
+        <% } %>
     </main>
     
 
