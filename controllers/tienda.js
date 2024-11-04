@@ -9,7 +9,8 @@ exports.getProductos = (req, res) => {
             res.render('tienda/lista-productos', {
                 prods: productos,
                 titulo: "Productos de la tienda", 
-                path: "/productos"
+                path: "/productos",
+                autenticado: req.session.autenticado
             });
         }).catch((err) => {
             console.log(err);
@@ -23,7 +24,8 @@ exports.getIndex = (req, res) => {
             res.render('tienda/index', {
                 prods: productos,
                 titulo: "Pagina principal de la Tienda", 
-                path: "/"
+                path: "/",
+                autenticado: req.session.autenticado
             });
         }).catch((err) => {
             console.log(err);
@@ -44,7 +46,8 @@ exports.getProductosPorCategoria = (categoria) => {
                 res.render('tienda/lista-productos', {
                     prods: productosFiltrados,
                     titulo: `${categoria}`,
-                    path: `/productos/${categoria}`
+                    path: `/productos/${categoria}`,
+                    autenticado: req.session.autenticado
                 })
             }).catch((err) => {
                 console.log(err);
@@ -61,7 +64,8 @@ exports.getProductosMenorMayor = (req, res) => {
             res.render('tienda/lista-productos', {
                 prods: productosOrdenados,
                 titulo: "Productos ordenados", 
-                path: "/productos/ordenar/menor-a-mayor"
+                path: "/productos/ordenar/menor-a-mayor",
+                autenticado: req.session.autenticado
                 
             });
         }).catch((err) => {
@@ -78,7 +82,8 @@ exports.getProductosMayorMenor = (req, res) => {
             res.render('tienda/lista-productos', {
                 prods: productosOrdenados,
                 titulo: "Productos ordenados", 
-                path: "/productos/ordenar/mayor-a-menor"
+                path: "/productos/ordenar/mayor-a-menor",
+                autenticado: req.session.autenticado
             });
         }).catch((err) => {
             console.log(err);
@@ -94,7 +99,8 @@ exports.getProductosAlfabeticamente = (req, res) => {
         res.render('tienda/lista-productos', {
             prods: productosOrdenados,
             titulo: "Productos ordenados", 
-            path: "/productos/ordenar/alfabeticamente"
+            path: "/productos/ordenar/alfabeticamente",
+            autenticado: req.session.autenticado
         });
     }).catch((err) => {
         console.log(err);
@@ -114,7 +120,8 @@ exports.getProductosPorColor = (color) => {
                 res.render('tienda/lista-productos', {
                     prods: productosFiltrados,
                     titulo: `${color}`,
-                    path: `/productos/${color}`
+                    path: `/productos/${color}`,
+                    autenticado: req.session.autenticado
                 })
             }).catch((err) => {
                 console.log(err);
@@ -130,7 +137,8 @@ exports.getProducto = (req, res) => {
             res.render('tienda/producto-detalle', {
                 producto: producto,
                 titulo: producto.nombre, 
-                path: `/productos/:${idProducto}`
+                path: `/productos/:${idProducto}`,
+                autenticado: req.session.autenticado
             });
         }).catch((err) => {
             console.log(err);
@@ -147,7 +155,8 @@ exports.postProductoPalabra = (req, res) => {
             res.render('tienda/lista-productos', {
                 prods: productosBuscados,
                 titulo: 'Productos buscados', 
-                path: '/productos'
+                path: '/productos',
+                autenticado: req.session.autenticado
             });
         }).catch((err) => {
             console.log(err);
@@ -165,7 +174,8 @@ exports.getCarrito = (req, res, next) => {
                 path: '/carrito',
                 titulo: 'Mi Carrito',
                 items: productosEnCarrito,
-                total: total
+                total: total,
+                autenticado: req.session.autenticado
             })
         })
         .catch((err) => {

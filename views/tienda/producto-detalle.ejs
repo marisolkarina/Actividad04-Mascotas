@@ -10,7 +10,10 @@
             
             <img src="<%=producto.urlImagen %>" class="card-img-top" alt="<%= producto.nombre %>">
 
-            <%- include('../includes/agregar-al-carrito.ejs', {producto: producto}) %>
+            <% if (autenticado) { %>
+                <%- include('../includes/agregar-al-carrito.ejs', {producto: producto}) %>
+            <% } %>
+            
         </div>
         <div class="mx-3">
             <h5 class="card-title text-center mt-2"><%= producto.nombre %></h5>

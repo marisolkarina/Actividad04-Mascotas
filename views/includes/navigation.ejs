@@ -14,24 +14,39 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand">PetShop</a>
+            
             <form class="d-flex" role="search" action="/productos" method="POST">
                 <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" name="textoIngresado">
                 <button class="btn btn-verde" type="submit">Buscar</button>
             </form>
         </div>
+        <% if (!autenticado) { %>
+            <a class="btn btn-success" href="/login">Login</a>
+        <% } else { %>
+            <form action="/salir" method="post">
+                <button type="submit" class="btn btn-secondary">Salir</button>
+            </form>
+        <% } %>
     </nav>
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid bg-orange">
             <div class="navbar-nav">
-                <a class="nav-link text-white" href="/productos/perro">Perro</a>
-                <a class="nav-link text-white" href="/productos/gato">Gato</a>
-                <a class="nav-link text-white" href="/productos/conejo">Conejo</a>
-                <a class="nav-link text-white" href="/productos/hamster">Hamster</a>
-                <a class="nav-link text-white" href="/login">Login</a>
-                <a class="nav-link text-white" href="/carrito">Carrito</a>
-                <a class="nav-link text-white" href="/pedidos">Mis Pedidos</a>
-                <a class="nav-link text-white" href="/admin/productos">Admin</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <a class="nav-link text-white" href="/productos/perro">Perro</a>
+                    <a class="nav-link text-white" href="/productos/gato">Gato</a>
+                    <a class="nav-link text-white" href="/productos/conejo">Conejo</a>
+                    <a class="nav-link text-white" href="/productos/hamster">Hamster</a>
+                    <% if (autenticado) { %>
+                        <a class="nav-link text-white" href="/carrito">Carrito</a>
+                        <a class="nav-link text-white" href="/pedidos">Mis Pedidos</a>
+                        <a class="nav-link text-white" href="/admin/productos">Admin</a>
+                    <% } %>
+                        
+                </div>
             </div>
         </div>
     </nav>

@@ -10,7 +10,8 @@ exports.getLogin = (req, res) => {
     res.render('login', {
         titulo: 'Login',
         path: '/login',
-        mensajeError: ''
+        mensajeError: '',
+        autenticado: false
     });
 };
 
@@ -61,7 +62,8 @@ exports.getRecuperarContraseña = (req, res) => {
         titulo: 'Recuperar Contraseña',
         path: '/login-contrasena',
         mensaje: '',
-        estilo: ''
+        estilo: '',
+        autenticado: false
     });
 };
 
@@ -102,7 +104,8 @@ exports.getRegistrarse = (req, res) => {
     res.render('login-registro', {
         titulo: 'Registro',
         path: '/registro',
-        mensajeError: ''
+        mensajeError: '',
+        autenticado: false
     });
 };
 
@@ -155,3 +158,10 @@ exports.postRegistrarse = (req, res) => {
         });
 };
 
+
+exports.postSalir = (req, res, next) => {
+    req.session.destroy(err => {
+        console.log(err);
+        res.redirect('/');
+    })
+}
