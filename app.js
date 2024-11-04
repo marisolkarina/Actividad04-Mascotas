@@ -34,13 +34,17 @@ app.use(session({ secret: 'algo muy secreto', resave: false, saveUninitialized: 
 
 
 app.use((req, res, next) => {
-  Usuario.findById('671d8f50279f2a74fa269ee7')
+  console.log(req.session);
+  if (!req.session.usuario) {
+    return next();
+  }
+  Usuario.findById(req.session.usuario._id)
     .then(usuario => {
-      console.log(usuario)
-      req.usuario = usuario;
-      next();
+        req.usuario = usuario;
+        next();
     })
     .catch(err => console.log(err));
+
 });
 
 app.use(loginRoutes);
