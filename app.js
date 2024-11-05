@@ -32,6 +32,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
 app.use(session({ secret: 'algo muy secreto', resave: false, saveUninitialized: false, store: store }));
 
+app.use((req, res, next) => {
+  res.locals.autenticado = req.session.autenticado || false;
+  res.locals.usuario = req.session.usuario || null;
+  next();
+});
+
 
 app.use((req, res, next) => {
   console.log(req.session);
