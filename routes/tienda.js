@@ -1,6 +1,7 @@
 const express = require('express');
 
 const tiendaController = require('../controllers/tienda');
+const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
@@ -28,16 +29,16 @@ router.get('/productos/marron', tiendaController.getProductosPorColor('marron'))
 router.get('/productos/:idProducto', tiendaController.getProducto);
 
 //Carrito
-router.get('/carrito', tiendaController.getCarrito);
-router.post('/agregar-carrito', tiendaController.postCarrito);
+router.get('/carrito', isAuth, tiendaController.getCarrito);
+router.post('/agregar-carrito',isAuth,  tiendaController.postCarrito);
 
-router.post('/eliminar-producto', tiendaController.postEliminarProductoCarrito)
+router.post('/eliminar-producto', isAuth,tiendaController.postEliminarProductoCarrito)
 
-router.post('/actualizar-cantidad', tiendaController.postActualizarCantidadCarrito);
+router.post('/actualizar-cantidad', isAuth, tiendaController.postActualizarCantidadCarrito);
 
 // Mis pedidos
-router.get('/pedidos', tiendaController.getMisPedidos);
-router.post('/crear-pedido', tiendaController.postMisPedidos);
-router.post('/cancelar-pedido', tiendaController.postCancelarPedido);
+router.get('/pedidos', isAuth, tiendaController.getMisPedidos);
+router.post('/crear-pedido', isAuth, tiendaController.postMisPedidos);
+router.post('/cancelar-pedido', isAuth, tiendaController.postCancelarPedido);
 
 module.exports = router;
