@@ -49,6 +49,9 @@ exports.postCrearProducto = (req, res) => {
         idUsuario: req.usuario._id
     });
 
+    if (req.usuario.role !== 'admin') {
+        return res.redirect('/');
+    }
     producto
         .save()
         .then((result) => {
@@ -67,9 +70,7 @@ exports.getEditarProducto = (req, res) => {
 
     Producto.findById(idProducto)
         .then((producto) => {
-            if (!producto) {
-                return res.redirect('/admin/productos');
-            }
+            
             res.render('admin/crear-editar-producto', {
                 titulo: 'Editar Producto',
                 path: '/admin/editar-producto',
@@ -94,6 +95,9 @@ exports.postEditarProducto = (req, res, next) => {
 
     Producto.findById(idProducto)
         .then((producto) => {
+            if (req.usuario.role !== 'admin') {
+                return res.redirect('/');
+            }
             producto.nombre = nombre;
             producto.urlImagen = urlImagen;
             producto.descripcion = descripcion;
@@ -115,7 +119,7 @@ exports.postEliminarProducto = (req, res, next) => {
 
     const idProducto = req.body.idProducto;
 
-    Producto.findByIdAndDelete(idProducto)
+    Producto.deleteOne({_id: idProducto, role: 'admin'})
         .then((result) => {
             console.log('Producto eliminado');
             res.redirect('/admin/productos');
@@ -143,6 +147,9 @@ exports.getUsuarios = (req, res) => {
 };
 
 exports.getCrearUsuario = (req, res) => {
+    if (req.usuario.role !== 'admin') {
+        return res.redirect('/');
+    }
     res.render('admin/crear-editar-usuario', {
         titulo: 'Crear usuario',
         path: '/crear-usuario',
@@ -209,9 +216,11 @@ exports.postEditarUsuario = (req, res, next) => {
 
     Usuario.findById(idUsuario)
         .then((usuario) => {
+            if (req.usuario.role !== 'admin') {
+                return res.redirect('/');
+            }
             usuario.nombre = nombre;
             usuario.email = email;
-            // usuario.password = password;
             usuario.role = role;
             return usuario.save();
         })
@@ -230,6 +239,9 @@ exports.postEliminarUsuario = (req, res, next) => {
 
     Usuario.findByIdAndDelete(idUsuario)
         .then((result) => {
+            if (req.usuario.role !== 'admin') {
+                return res.redirect('/');
+            }
             console.log('Usuario eliminado');
             res.redirect('/admin/usuarios');
         }).catch((err) => {
@@ -283,7 +295,9 @@ exports.postEditarPedido = (req, res, next) => {
 
     Pedido.findById(idPedido)
         .then((pedido) => {
-            console.log("Precio total del pedido: " + pedido.precioTotal);
+            if (req.usuario.role !== 'admin') {
+                return res.redirect('/');
+            }
 
             for (let i = 0; i < pedido.productos.length; i++) {
                 const nuevaCantidad = parseInt(req.body[`cantidadProducto${i}`], 10);
