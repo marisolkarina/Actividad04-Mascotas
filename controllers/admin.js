@@ -204,14 +204,14 @@ exports.postEditarUsuario = (req, res, next) => {
     const idUsuario = req.body.idUsuario;
     const nombre = req.body.nombre;
     const email = req.body.email;
-    const password = req.body.password;
+    // const password = req.body.password;
     const role = req.body.role;
 
     Usuario.findById(idUsuario)
         .then((usuario) => {
             usuario.nombre = nombre;
             usuario.email = email;
-            usuario.password = password;
+            // usuario.password = password;
             usuario.role = role;
             return usuario.save();
         })

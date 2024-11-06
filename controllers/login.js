@@ -1,6 +1,20 @@
 const Usuario = require('../models/usuario');
-const Pedido = require('../models/pedido');
-const bcrypt = require('bcryptjs'); 
+const bcrypt = require('bcryptjs');
+
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+
+// const APIKEY = 'AQUI VIENE EL API KEY';
+const APIKEY = '';
+
+const transporter = nodemailer.createTransport(
+  sendgridTransport({
+    auth: {
+      api_key:
+        APIKEY
+    }
+  })
+);
 
 // LOGIN
 
@@ -54,7 +68,7 @@ exports.postLogin = (req, res) => {
                         if (usuario.role === 'admin') {
                             res.redirect('/admin/productos');
                         } else {
-                            res.redirect('/mi-cuenta');
+                            res.redirect('/pedidos');
                         }
                     });
                 });
@@ -159,6 +173,13 @@ exports.postRegistrarse = (req, res) => {
                 })
                 .then(() => {
                     res.redirect('/login');
+
+                    return transporter.sendMail({
+                        to: email,
+                        from: 'marisol.karina.pr40@gmail.com',
+                        subject: 'Registro exitoso',
+                        html: '<h1>Bienvenido. Se ha registrado satisfactoriamente en el PetShop.</h1>'
+                    });
                 })
                 .catch((err) => {
                     console.log(err);

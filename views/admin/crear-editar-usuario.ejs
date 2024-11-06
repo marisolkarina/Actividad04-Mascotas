@@ -30,8 +30,8 @@
     
             <!-- Campo Password -->
             <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="text" class="form-control" name="password" id="password" value="<% if (modoEdicion) { %><%= usuario.password %><% } %>">
+                <label for="password" class="form-label">Password Encriptada</label>
+                <p><%= usuario.password %></p>
             </div>
     
             <!-- Campo oculto para el ID si está en modo edición -->
