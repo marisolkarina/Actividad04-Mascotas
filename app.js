@@ -23,6 +23,8 @@ const store = new MongoDBStore({
   collection: 'sessions'
 });
 
+const csrf = require('csurf'); 
+const csrfProtection = csrf()
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -38,6 +40,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(csrfProtection);
 
 app.use((req, res, next) => {
   console.log(req.session);
@@ -51,6 +54,12 @@ app.use((req, res, next) => {
     })
     .catch(err => console.log(err));
 
+});
+
+app.use((req, res, next) =>{
+  res.locals.autenticado = req.session.autenticado;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use(loginRoutes);

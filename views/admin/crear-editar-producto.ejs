@@ -12,6 +12,7 @@
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" class="form-control" name="nombre" id="nombre" value="<% if (modoEdicion) { %><%= producto.nombre %><% } %>">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             </div>
             
             <!-- Campo URL Imagen -->
