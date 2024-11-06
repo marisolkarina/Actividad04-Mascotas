@@ -27,7 +27,7 @@
                     <!-- Espacio para Contraseña -->
                     <div class="mb-3 w-50">
                         <label for="exampleInputPassword1" class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" id="exampleInputPassword1">
+                        <input type="password" name="password" class="form-control" id="exampleInputPassword1" minlength="6">
                     </div>
 
                     <!-- Recordarme -->
@@ -38,25 +38,22 @@
                         </label>
                     </div>
 
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <!-- Botón de Iniciar sesión -->
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <button type="submit" class="btn btn-verde w-50">Iniciar sesión</button>
                 </form>
 
                 <!-- Enlace Olvidaste tu contraseña (fuera del formulario) -->
                 <div class="w-50 text-end mt-2">
-                    <a href="/login-contrasena" class="text-end">¿Olvidaste tu contraseña?</a>
+                    <a href="/recuperar-contrasena" class="text-end">¿Olvidaste tu contraseña?</a>
                 </div>
 
-                <% if (typeof existe !== 'undefined' && !existe) { %>
-                    <p class="m-5">El usuario ingresado no existe</p>
-                <% } %>
             </div>
 
             <!-- Right-aligned content -->
             <div class="right-aligned-content">
                 <!-- Update form action to point to /login-registro -->
-                <form action='/login-registro' method="GET" class="m-5 d-flex flex-column align-items-center">
+                <form action='/registro' method="GET" class="m-5 d-flex flex-column align-items-center">
                     <h2>REGISTRARSE</h2>
                     <p>Registrarse en este sitio le permite acceder al estado y al historial de su pedido. Simplemente complete los campos a continuación y
                         obtendremos una nueva cuenta configurada para usted en poco tiempo.</p>

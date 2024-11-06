@@ -1,16 +1,20 @@
 const path = require('path');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+
 const express = require('express');
+
+const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const mongoose = require('mongoose');
 const Usuario = require('./models/usuario');
-const session = require('express-session')
+const session = require('express-session');
 
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 const MONGODB_URI = 'mongodb+srv://marisol:secreto@cluster0.71urh.mongodb.net/mascotas?retryWrites=true&w=majority&appName=Cluster0';
 
-const adminRoutes = require('./routes/admin')
+const adminRoutes = require('./routes/admin');
 const tiendaRoutes = require('./routes/tienda');
 const errorController = require('./controllers/error');
 const loginRoutes = require('./routes/login');
@@ -23,8 +27,7 @@ const store = new MongoDBStore({
   collection: 'sessions'
 });
 
-const csrf = require('csurf'); 
-const csrfProtection = csrf()
+const csrfProtection = csrf();
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -33,14 +36,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
 app.use(session({ secret: 'algo muy secreto', resave: false, saveUninitialized: false, store: store }));
-
-app.use((req, res, next) => {
-  res.locals.autenticado = req.session.autenticado || false;
-  res.locals.usuario = req.session.usuario || null;
-  next();
-});
-
+  
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   // console.log(req.session);
@@ -56,7 +54,7 @@ app.use((req, res, next) => {
 
 });
 
-app.use((req, res, next) =>{
+app.use((req, res, next) => {
   res.locals.autenticado = req.session.autenticado;
   res.locals.csrfToken = req.csrfToken();
   next();
@@ -66,7 +64,7 @@ app.use(loginRoutes);
 app.use('/admin', adminRoutes);
 app.use(tiendaRoutes);
 
-app.use(errorController.get404)
+app.use(errorController.get404);
 
 mongoose
   .connect(MONGODB_URI)

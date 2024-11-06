@@ -13,8 +13,8 @@
                 <form action="/recuperar-contrasena" method="POST" class="m-5 d-flex flex-column align-items-center">
                     <h2>INGRESE SU CORREO ELECTRÓNICO</h2>
 
-                    <% if (mensaje) { %>
-                        <div class="alert <%= estilo %>"><%= mensaje %></div>
+                    <% if (mensajeError) { %>
+                        <div class="alert <%= estilo %>"><%= mensajeError %></div>
                     <% } %>
 
                     <!-- Espacio para Dirección de correo -->

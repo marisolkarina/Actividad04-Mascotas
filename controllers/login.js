@@ -7,11 +7,18 @@ const bcrypt = require('bcryptjs');
 // Controlador para mostrar la página de login
 
 exports.getLogin = (req, res) => {
-    console.log(req.session.autenticado);
+
+    let mensaje = req.flash('error');
+    if (mensaje.length > 0) {
+        mensaje = mensaje[0];
+    } else {
+        mensaje = null;
+    }
+    
     res.render('login', {
         titulo: 'Login',
         path: '/login',
-        mensajeError: '',
+        mensajeError: mensaje,
         autenticado: false
     });
 };
@@ -25,22 +32,16 @@ exports.postLogin = (req, res) => {
     Usuario.findOne({ email: email })
         .then((usuario) => {
             if (!usuario) {
-                return res.render('login', {
-                    titulo: 'Login',
-                    path: '/login',
-                    mensajeError: 'Email o password incorrecto.'
-                });
+                req.flash('error', 'Email o password incorrecto.');
+                return res.redirect('/login');
             }
 
             // Comparar la contraseña ingresada con la contraseña cifrada
             bcrypt.compare(password, usuario.password)
                 .then((doMatch) => {
                     if (!doMatch) {
-                        return res.render('login', {
-                            titulo: 'Login',
-                            path: '/login',
-                            mensajeError: 'Email o password incorrecto.'
-                        });
+                        req.flash('error', 'Email o password incorrecto.');
+                        return res.redirect('/login');
                     }
 
                     // Si la contraseña es correcta
@@ -67,11 +68,18 @@ exports.postLogin = (req, res) => {
 
 // Controlador para renderizar la página de recuperación de contraseña
 exports.getRecuperarContraseña = (req, res) => {
-    res.render('login-contrasena', {
+    let mensaje = req.flash('error');
+    let estilo = req.flash('estilo');
+    if (mensaje.length > 0) {
+        mensaje = mensaje[0];
+    } else {
+        mensaje = null;
+    }
+    res.render('recuperar-contrasena', {
         titulo: 'Recuperar Contraseña',
-        path: '/login-contrasena',
-        mensaje: '',
-        estilo: '',
+        path: '/recuperar-contrasena',
+        mensajeError: mensaje,
+        estilo: estilo,
         autenticado: false
     });
 };
@@ -83,25 +91,17 @@ exports.postRecuperarContraseña = (req, res) => {
     Usuario.findOne({ email: email })
         .then((usuario) => {
             if (!usuario) {
-                res.render('login-contrasena', {
-                    titulo: 'Recuperar contraseña',
-                    path: '/login-contrasena',
-                    mensaje: 'La cuenta no existe',
-                    estilo: 'alert-danger'
-                });
+                req.flash('error', 'La cuenta no existe');
+                req.flash('estilo', 'alert-danger');
             } else {
-                res.render('login-contrasena', {
-                    titulo: 'Recuperar contraseña',
-                    path: '/login-contrasena',
-                    mensaje: `Se enviará un correo a: ${email}`,
-                    estilo: 'alert-success'
-                });
+                req.flash('error', `Se enviará un correo a: ${email}`);
+                req.flash('estilo', 'alert-success');
             }
+            return res.redirect('/recuperar-contrasena');
 
         }).catch((err) => {
             console.log(err);
         });    
-
     
 };  
 
@@ -110,10 +110,16 @@ exports.postRecuperarContraseña = (req, res) => {
 
 // Controlador para renderizar la página de registro
 exports.getRegistrarse = (req, res) => {
-    res.render('login-registro', {
+    let mensaje = req.flash('error');
+    if (mensaje.length > 0) {
+        mensaje = mensaje[0];
+    } else {
+        mensaje = null;
+    }
+    res.render('registro', {
         titulo: 'Registro',
         path: '/registro',
-        mensajeError: '',
+        mensajeError: mensaje,
         autenticado: false
     });
 };
@@ -130,19 +136,13 @@ exports.postRegistrarse = (req, res) => {
     Usuario.findOne({ email: email })
         .then((usuarioExistente) => {
             if (password !== confirmarPassword) {
-                return res.render('login-registro', {
-                    titulo: 'Registro',
-                    path: '/registro',
-                    mensajeError: 'Las contraseñas no coinciden.'
-                });
+                req.flash('error', 'Las contraseñas no coinciden.');
+                return res.redirect('/registro');
             } 
             
             if (usuarioExistente) {
-                return res.render('login-registro', {
-                    titulo: 'Registro',
-                    path: '/registro',
-                    mensajeError: 'El usuario ya existe'
-                });
+                req.flash('error', 'El usuario ya existe');
+                return res.redirect('/registro');
             }
 
             // Cifrar la contraseña
