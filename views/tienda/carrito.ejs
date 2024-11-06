@@ -51,7 +51,7 @@
                                     <td>
                                         <form action="/eliminar-producto" method="POST">
                                             <input type="hidden" name="idProducto" value="<%= item.idProducto._id %>">
-                                            
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                             <button type="submit" class="btn btn-danger">Eliminar</button>
                                         </form>
                                     </td>

@@ -30,6 +30,7 @@
                                 <a href="/admin/editar-producto/<%= producto._id %>" class="btn btn-warning w-50">Editar</a>
                                 <form action="/admin/eliminar-producto" method="POST">
                                     <input type="hidden" value="<%= producto._id %>" name="idProducto">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" >
                                     <button class="btn btn-danger w-50 mt-2" type="submit">Eliminar</button>
                                 </form>
                             </div>

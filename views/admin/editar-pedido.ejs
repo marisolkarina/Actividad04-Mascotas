@@ -15,6 +15,7 @@
                     <p><%= prod.producto.nombre %></p>
                     <label for="cantidadProducto" class="form-label">Cantidad</label>
                     <input type="number" class="form-control" name="cantidadProducto<%= index %>" id="cantidadProducto" value="<%= prod.cantidad %>">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 </div>
             <% }) %>
 

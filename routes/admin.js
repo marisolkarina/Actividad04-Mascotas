@@ -1,48 +1,50 @@
 const express = require('express');
 
 const adminController = require('../controllers/admin');
+const isAuth = require('../middleware/is-auth');
+
 
 const router = express.Router();
 
 
 // /admin/productos
-router.get('/productos', adminController.getProductos);
+router.get('/productos', isAuth, adminController.getProductos);
 
 // /admin/crear-producto
-router.get('/crear-producto', adminController.getCrearProducto);
+router.get('/crear-producto', isAuth, adminController.getCrearProducto);
 
-router.post('/crear-producto', adminController.postCrearProducto);
+router.post('/crear-producto', isAuth, adminController.postCrearProducto);
 
 // /admin/editar-producto
-router.get('/editar-producto/:idProducto', adminController.getEditarProducto);
+router.get('/editar-producto/:idProducto', isAuth, adminController.getEditarProducto);
 
-router.post('/editar-producto', adminController.postEditarProducto);
+router.post('/editar-producto', isAuth, adminController.postEditarProducto);
 
 // /admin/eliminar-producto
-router.post('/eliminar-producto', adminController.postEliminarProducto);
+router.post('/eliminar-producto', isAuth, adminController.postEliminarProducto);
 
 // /admin/usuarios
-router.get('/usuarios', adminController.getUsuarios);
+router.get('/usuarios', isAuth, adminController.getUsuarios);
 
 // // /admin/usuarios
-router.get('/crear-usuario', adminController.getCrearUsuario);
+router.get('/crear-usuario', isAuth, adminController.getCrearUsuario);
 
-router.post('/crear-usuario', adminController.postCrearUsuario);
+router.post('/crear-usuario', isAuth, adminController.postCrearUsuario);
 
 // // /admin/editar-usuario
-router.get('/editar-usuario/:idUsuario', adminController.getEditarUsuario);
+router.get('/editar-usuario/:idUsuario', isAuth, adminController.getEditarUsuario);
 
-router.post('/editar-usuario', adminController.postEditarUsuario);
+router.post('/editar-usuario', isAuth, adminController.postEditarUsuario);
 
 // // /admin/eliminar-usuario
-router.post('/eliminar-usuario', adminController.postEliminarUsuario);
+router.post('/eliminar-usuario', isAuth, adminController.postEliminarUsuario);
 
 // /admin/pedidos
-router.get('/pedidos', adminController.getPedidos);
+router.get('/pedidos', isAuth, adminController.getPedidos);
 
 // /admin/editar-pedido
-router.get('/editar-pedido/:idPedido', adminController.getEditarPedido);
+router.get('/editar-pedido/:idPedido', isAuth, adminController.getEditarPedido);
 
-router.post('/editar-pedido', adminController.postEditarPedido);
+router.post('/editar-pedido', isAuth, adminController.postEditarPedido);
 
 module.exports = router;
