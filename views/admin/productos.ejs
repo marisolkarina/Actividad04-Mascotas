@@ -11,7 +11,7 @@
         <div class="container">
             <a href="/admin/crear-producto" class="btn btn-verde w-25 my-4">Crear producto</a>
 
-            <% if (prods.length > 0 && autenticado) { %>
+            <% if (prods.length > 0) { %>
                 <% for (let producto of prods) { %>
                     <div class="d-flex align-items-center">
                         <div class="col-4 mb-2 card" style="width: 18rem;">
@@ -40,7 +40,7 @@
                     </div>
                 <% } %>
             <% } else { %>
-                <h1>No hay productos o no estás autenticado</h1>
+                <h1>No hay productos</h1>
             <% } %>
         </div>
     </main>

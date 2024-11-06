@@ -43,7 +43,7 @@ app.use((req, res, next) => {
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
-  console.log(req.session);
+  // console.log(req.session);
   if (!req.session.usuario) {
     return next();
   }
@@ -71,7 +71,7 @@ app.use(errorController.get404)
 mongoose
   .connect(MONGODB_URI)
   .then(result => {
-    console.log(result);
+    // console.log(result);
     Usuario.findOne().then((usuario) => {
       if (!usuario) {
         const usuario = new Usuario({

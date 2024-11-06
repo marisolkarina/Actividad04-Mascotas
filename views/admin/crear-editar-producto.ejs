@@ -12,7 +12,6 @@
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" class="form-control" name="nombre" id="nombre" value="<% if (modoEdicion) { %><%= producto.nombre %><% } %>">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             </div>
             
             <!-- Campo URL Imagen -->
@@ -50,6 +49,7 @@
                 <input type="hidden" value="<%= producto._id %>" name="idProducto">
             <% } %>
     
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <!-- Botón de Envío -->
             <button class="btn btn-primary" type="submit">
                 <% if (modoEdicion) { %>Actualizar Producto<% } else { %>Crear Producto<% } %>
