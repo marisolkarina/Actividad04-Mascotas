@@ -36,9 +36,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
 app.use(session({ secret: 'algo muy secreto', resave: false, saveUninitialized: false, store: store }));
-  
-app.use(csrfProtection);
+
 app.use(flash());
+app.use(csrfProtection);
 
 app.use((req, res, next) => {
   // console.log(req.session);

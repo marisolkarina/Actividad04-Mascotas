@@ -2,19 +2,21 @@ const express = require('express');
 const loginController = require('../controllers/login');
 const router = express.Router();
 
-// Ruta para la vista de "Olvidaste tu contraseña"
-router.get('/recuperar-contrasena', loginController.getRecuperarContraseña);
+// Recuperacion de cuenta
+router.get('/recuperar-contrasena', loginController.getRecuperarContrasena);
+router.post('/recuperar-contrasena', loginController.postRecuperarContrasena);
+router.get('/nuevo-password/:token', loginController.getNuevoPassword);
+router.post('/nuevo-password', loginController.postNuevoPassword);
 
-// Ruta para manejar el POST del formulario de recuperación de contraseña
-router.post('/recuperar-contrasena', loginController.postRecuperarContraseña);
-
-// Ruta para manejar el registro de un nuevo usuario
-router.post('/registro', loginController.postRegistrarse);
-
-// Otras rutas existentes
+// Inicio de sesion
 router.get('/login', loginController.getLogin);
 router.post('/login', loginController.postLogin);
+
+// Registro
 router.get('/registro', loginController.getRegistrarse);
+router.post('/registro', loginController.postRegistrarse);
+
+// Cierre de sesion
 router.post('/salir', loginController.postSalir);
 
 
