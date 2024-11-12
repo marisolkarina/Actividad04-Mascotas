@@ -1,6 +1,7 @@
 const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const {validationResult} = require('express-validator');
 
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
@@ -210,16 +211,16 @@ exports.postNuevoPassword = (req, res, next) => {
 
 // Controlador para renderizar la página de registro
 exports.getRegistrarse = (req, res) => {
-    let mensaje = req.flash('error');
-    if (mensaje.length > 0) {
-        mensaje = mensaje[0];
-    } else {
-        mensaje = null;
-    }
+    // let mensaje = req.flash('error');
+    // if (mensaje.length > 0) {
+    //     mensaje = mensaje[0];
+    // } else {
+    //     mensaje = null;
+    // }
     res.render('auth/registro', {
         titulo: 'Registro',
         path: '/registro',
-        mensajeError: mensaje,
+        mensajeError: '',
         autenticado: false
     });
 };
@@ -229,16 +230,25 @@ exports.postRegistrarse = (req, res) => {
     const nombre = req.body.nombre;
     const email = req.body.email;
     const password = req.body.password;
-    const confirmarPassword = req.body.confirmPassword; // Asumiendo que tienes un campo para confirmar la contraseña
+    // const confirmarPassword = req.body.confirmPassword; 
 
     // Verificar si el usuario ya existe
 
     Usuario.findOne({ email: email })
         .then((usuarioExistente) => {
-            if (password !== confirmarPassword) {
-                req.flash('error', 'Las contraseñas no coinciden.');
-                return res.redirect('/registro');
-            } 
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            console.log(errors.array())
+            return res.status(422).render('auth/registro', {
+                path: '/registro',
+                titulo: 'Registro',
+                mensajeError: errors.array()[0].msg
+            });
+        }
+            // if (password !== confirmarPassword) {
+            //     req.flash('error', 'Las contraseñas no coinciden.');
+            //     return res.redirect('/registro');
+            // } 
             
             if (usuarioExistente) {
                 req.flash('error', 'El usuario ya existe');

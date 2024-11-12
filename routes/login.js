@@ -1,5 +1,6 @@
 const express = require('express');
 const loginController = require('../controllers/login');
+const { check, body } = require('express-validator');
 const router = express.Router();
 
 // Recuperacion de cuenta
@@ -14,7 +15,14 @@ router.post('/login', loginController.postLogin);
 
 // Registro
 router.get('/registro', loginController.getRegistrarse);
-router.post('/registro', loginController.postRegistrarse);
+router.post('/registro', [
+    body('confirmPassword').custom((value, { req } ) => {
+        if (value !== req.body.password) {
+            throw new Error('Las contraseñas no coinciden.');
+        }
+        return true;
+    })
+], loginController.postRegistrarse);
 
 // Cierre de sesion
 router.post('/salir', loginController.postSalir);
