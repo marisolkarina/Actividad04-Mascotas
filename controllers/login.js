@@ -156,27 +156,32 @@ exports.postRecuperarContrasena = (req, res) => {
 
 exports.getNuevoPassword = (req, res, next) => {
     const token = req.params.token;
-    console.log(token)
 
     Usuario.findOne({ tokenReinicio: token, expiracionTokenReinicio: { $gt: Date.now() } })
         .then(usuario => {
-            console.log(usuario)
-            let mensaje = req.flash('error');
-            if (mensaje.length > 0) {
-                mensaje = mensaje[0];
-            } else {
-                mensaje = null;
+            if (!usuario) {
+                return res.status(422).render('auth/nuevo-password', {
+                    path: `/nuevo-password/${token}`,
+                    titulo: 'Nuevo Password',
+                    mensajeError: 'Token inválido o ha expirado.',
+                    idUsuario: null,
+                    tokenPassword: token,
+                    csrfToken: req.csrfToken()
+                });
             }
+
             res.render('auth/nuevo-password', {
-                path: `/nuevo-password/:${token}`,
+                path: `/nuevo-password/${token}`,
                 titulo: 'Nuevo Password',
-                mensajeError: mensaje,
+                mensajeError: null,
                 idUsuario: usuario._id.toString(),
-                tokenPassword: token
+                tokenPassword: token,
+                csrfToken: req.csrfToken()
             });
         })
         .catch(err => {
             console.log(err);
+            res.redirect('/login');
         });
 };
 
@@ -239,12 +244,6 @@ exports.postNuevoPassword = (req, res, next) => {
 
 // Controlador para renderizar la página de registro
 exports.getRegistrarse = (req, res) => {
-    // let mensaje = req.flash('error');
-    // if (mensaje.length > 0) {
-    //     mensaje = mensaje[0];
-    // } else {
-    //     mensaje = null;
-    // }
     res.render('auth/registro', {
         titulo: 'Registro',
         path: '/registro',

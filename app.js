@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const express = require('express');
 
 const csrf = require('csurf');
-const flash = require('connect-flash');
 
 const mongoose = require('mongoose');
 const Usuario = require('./models/usuario');
@@ -38,7 +37,6 @@ app.use('/utils', express.static(path.join(__dirname, 'utils')));
 app.use(express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
 app.use(session({ secret: 'algo muy secreto', resave: false, saveUninitialized: false, store: store }));
 
-app.use(flash());
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
