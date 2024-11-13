@@ -20,51 +20,59 @@ const transporter = nodemailer.createTransport(
 // LOGIN
 
 // Controlador para mostrar la página de login
-
 exports.getLogin = (req, res) => {
-
-    let mensaje = req.flash('error');
-    if (mensaje.length > 0) {
-        mensaje = mensaje[0];
-    } else {
-        mensaje = null;
-    }
-    
     res.render('auth/login', {
         titulo: 'Login',
         path: '/login',
-        mensajeError: mensaje,
+        mensajeError: null,
         autenticado: false
     });
 };
 
 // Controlador para procesar el inicio de sesión
 exports.postLogin = (req, res) => {
-    console.log(req.session);
-    const email = req.body.email;
-    const password = req.body.password;
-    
+    const { email, password } = req.body;
+
+    // Captura los errores de validación
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).render('auth/login', {
+            titulo: 'Login',
+            path: '/login',
+            mensajeError: errors.array()[0].msg, // Mostrar el primer error
+            datosAnteriores: { email, password },
+            validationErrors: errors.array() // Pasar todos los errores para mostrar en la vista
+        });
+    }
+
     Usuario.findOne({ email: email })
         .then((usuario) => {
             if (!usuario) {
-                req.flash('error', 'Email o password incorrecto.');
-                return res.redirect('/login');
+                return res.status(422).render('auth/login', {
+                    titulo: 'Login',
+                    path: '/login',
+                    mensajeError: 'Email o contraseña incorrecto.',
+                    datosAnteriores: { email, password },
+                    validationErrors: [] 
+                });
             }
 
-            // Comparar la contraseña ingresada con la contraseña cifrada
             bcrypt.compare(password, usuario.password)
                 .then((doMatch) => {
                     if (!doMatch) {
-                        req.flash('error', 'Email o password incorrecto.');
-                        return res.redirect('/login');
+                        return res.status(422).render('auth/login', {
+                            titulo: 'Login',
+                            path: '/login',
+                            mensajeError: 'Email o contraseña incorrecto.',
+                            datosAnteriores: { email, password },
+                            validationErrors: []
+                        });
                     }
 
-                    // Si la contraseña es correcta
                     req.session.autenticado = true;
                     req.session.usuario = usuario;
-                    
                     req.session.save((err) => {
-                        if (err) console.log('Error al guardar sesion', err);
+                        if (err) console.log('Error al guardar la sesión:', err);
                         
                         if (usuario.role === 'admin') {
                             res.redirect('/admin/productos');
@@ -77,73 +85,73 @@ exports.postLogin = (req, res) => {
         .catch((err) => {
             console.log(err);
         });
-        
 };
 
 
 // Controlador para renderizar la página de recuperación de contraseña
 exports.getRecuperarContrasena = (req, res) => {
-    let mensaje = req.flash('error');
-    let estilo = req.flash('estilo');
-    if (mensaje.length > 0) {
-        mensaje = mensaje[0];
-    } else {
-        mensaje = null;
-    }
     res.render('auth/recuperar-contrasena', {
         titulo: 'Recuperar Contraseña',
         path: '/recuperar-contrasena',
-        mensajeError: mensaje,
-        estilo: estilo,
+        mensajeError: null,
+        estilo: null,
         autenticado: false
     });
 };
 
 // Controlador para manejar el envío del formulario de recuperación de contraseña
 exports.postRecuperarContrasena = (req, res) => {
+    const email = req.body.email;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).render('auth/recuperar-contrasena', {
+            titulo: 'Recuperar Contraseña',
+            path: '/recuperar-contrasena',
+            mensajeError: errors.array()[0].msg,
+            estilo: 'alert-danger',
+            autenticado: false
+        });
+    }
 
     crypto.randomBytes(32, (err, buffer) => {
-        
         if (err) {
             console.log(err);
-            return redirect('/recuperar-contrasena');
+            return res.redirect('/recuperar-contrasena');
         }
 
         const token = buffer.toString('hex');
-        const email = req.body.email;
 
         Usuario.findOne({ email: email })
-        .then((usuario) => {
-            if (!usuario) {
-                req.flash('error', 'La cuenta no existe');
-                req.flash('estilo', 'alert-danger');
-                return res.redirect('/recuperar-contrasena');
-            }
+            .then((usuario) => {
+                if (!usuario) {
+                    return res.status(422).render('auth/recuperar-contrasena', {
+                        titulo: 'Recuperar Contraseña',
+                        path: '/recuperar-contrasena',
+                        mensajeError: 'La cuenta no existe',
+                        estilo: 'alert-danger',
+                        autenticado: false
+                    });
+                }
 
-            req.flash('error', `Se enviará un correo a: ${email}`);
-            req.flash('estilo', 'alert-success');
-            usuario.tokenReinicio = token;
-            usuario.expiracionTokenReinicio = Date.now() + 3600000;
-            return usuario.save();
-
-        })
-        .then((result) => {
-            res.redirect('/recuperar-contrasena');
-            transporter.sendMail({
-                to: email,
-                from: 'marisol.karina.pr40@gmail.com',
-                subject: 'Reinicio de password',
-                html: `
-                    <p>Tu has solicitado un reinicio de password</p>
-                    <p>Click aqui <a href="http://localhost:3000/nuevo-password/` + token + `">link</a> para establecer una nuevo password.</p>
-                    `
+                usuario.tokenReinicio = token;
+                usuario.expiracionTokenReinicio = Date.now() + 3600000;
+                return usuario.save();
+            })
+            .then(() => {
+                res.redirect('/recuperar-contrasena');
+                transporter.sendMail({
+                    to: email,
+                    from: 'marisol.karina.pr40@gmail.com',
+                    subject: 'Reinicio de password',
+                    html: `<p>Has solicitado un reinicio de password</p>
+                           <p>Click aquí <a href="http://localhost:3000/nuevo-password/${token}">link</a> para establecer una nueva password.</p>`
+                });
+            })
+            .catch((err) => {
+                console.log(err);
             });
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    })    
-    
+    });
 };
 
 exports.getNuevoPassword = (req, res, next) => {
@@ -173,10 +181,22 @@ exports.getNuevoPassword = (req, res, next) => {
 };
 
 exports.postNuevoPassword = (req, res, next) => {
-    const nuevoPassword = req.body.password;
-    const confirmarPassword = req.body.confirmPassword;
-    const idUsuario = req.body.idUsuario;
-    const tokenPassword = req.body.tokenPassword;
+    const { password, confirmPassword, idUsuario, tokenPassword } = req.body;
+
+    // Captura los errores de validación
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).render('auth/nuevo-password', {
+            titulo: 'Nuevo Password',
+            path: `/nuevo-password/${tokenPassword}`,
+            mensajeError: errors.array()[0].msg, // Mostrar el primer error
+            estilo: 'alert-danger',
+            idUsuario,
+            tokenPassword,
+            csrfToken: req.csrfToken() // Asegura que el token CSRF esté presente
+        });
+    }
+
     let usuarioParaActualizar;
   
     Usuario.findOne({
@@ -185,12 +205,19 @@ exports.postNuevoPassword = (req, res, next) => {
         _id: idUsuario
     })
         .then(usuario => {
-            if (nuevoPassword !== confirmarPassword) {
-                req.flash('error', 'Las contraseñas no coinciden.');
-                return res.redirect(`/nuevo-password/:${tokenPassword}`);
+            if (!usuario) {
+                return res.status(422).render('auth/nuevo-password', {
+                    titulo: 'Nuevo Password',
+                    path: `/nuevo-password/${tokenPassword}`,
+                    mensajeError: 'Token inválido o ha expirado.',
+                    estilo: 'alert-danger',
+                    idUsuario,
+                    tokenPassword,
+                    csrfToken: req.csrfToken()
+                });
             }
             usuarioParaActualizar = usuario;
-            return bcrypt.hash(nuevoPassword, 12);
+            return bcrypt.hash(password, 12);
         })
         .then(hashedPassword => {
             usuarioParaActualizar.password = hashedPassword;
@@ -198,13 +225,14 @@ exports.postNuevoPassword = (req, res, next) => {
             usuarioParaActualizar.expiracionTokenReinicio = undefined;
             return usuarioParaActualizar.save();
         })
-        .then(result => {
+        .then(() => {
             res.redirect('/login');
         })
         .catch(err => {
             console.log(err);
         });
 };
+
 
 
 // REGISTRO
@@ -227,59 +255,43 @@ exports.getRegistrarse = (req, res) => {
 
 // Controlador para manejar el registro de nuevos usuarios
 exports.postRegistrarse = (req, res) => {
-    const nombre = req.body.nombre;
-    const email = req.body.email;
-    const password = req.body.password;
-    // const confirmarPassword = req.body.confirmPassword; 
+    const { nombre, dni, email, password } = req.body;
 
-    // Verificar si el usuario ya existe
+    // Captura los errores de validación
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).render('auth/registro', {
+            path: '/registro',
+            titulo: 'Registro',
+            mensajeError: errors.array()[0].msg,
+            datosAnteriores: { nombre, dni, email, password },
+            validationErrors: errors.array() // Enviar todos los errores para mostrarlos en la vista
+        });
+    }
 
-    Usuario.findOne({ email: email })
-        .then((usuarioExistente) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            console.log(errors.array())
-            return res.status(422).render('auth/registro', {
-                path: '/registro',
-                titulo: 'Registro',
-                mensajeError: errors.array()[0].msg
+    // Cifrar la contraseña y guardar el usuario
+    bcrypt.hash(password, 12)
+        .then((hashedPassword) => {
+            const usuario = new Usuario({
+                nombre,
+                dni,
+                email,
+                password: hashedPassword,
+                role: 'user',
+                carrito: { items: [], precioTotal: 0 }
             });
-        }
-            // if (password !== confirmarPassword) {
-            //     req.flash('error', 'Las contraseñas no coinciden.');
-            //     return res.redirect('/registro');
-            // } 
-            
-            if (usuarioExistente) {
-                req.flash('error', 'El usuario ya existe');
-                return res.redirect('/registro');
-            }
+            return usuario.save();
+        })
+        .then(() => {
+            res.redirect('/login');
 
-            // Cifrar la contraseña
-            bcrypt.hash(password, 12)
-                .then((hashedPassword) => {
-                    const usuario = new Usuario({
-                        nombre: nombre,
-                        email: email,
-                        password: hashedPassword, // Guardar la contraseña cifrada
-                        role: 'user',
-                        carrito: { items: [], precioTotal: 0 }
-                    });
-                    return usuario.save();
-                })
-                .then(() => {
-                    res.redirect('/login');
-
-                    return transporter.sendMail({
-                        to: email,
-                        from: 'marisol.karina.pr40@gmail.com',
-                        subject: 'Registro exitoso',
-                        html: '<h1>Bienvenido. Se ha registrado satisfactoriamente en el PetShop.</h1>'
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+            // Enviar correo de confirmación
+            return transporter.sendMail({
+                to: email,
+                from: 'marisol.karina.pr40@gmail.com',
+                subject: 'Registro exitoso',
+                html: '<h1>Bienvenido. Se ha registrado satisfactoriamente en el PetShop.</h1>'
+            });
         })
         .catch((err) => {
             console.log(err);

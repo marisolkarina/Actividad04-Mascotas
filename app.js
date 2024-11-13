@@ -34,6 +34,7 @@ app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/utils', express.static(path.join(__dirname, 'utils')));
 app.use(express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
 app.use(session({ secret: 'algo muy secreto', resave: false, saveUninitialized: false, store: store }));
 

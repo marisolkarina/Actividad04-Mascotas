@@ -11,7 +11,7 @@
         <div class="content-wrapper">
             <!-- Left-aligned content for registration form -->
             <div class="left-aligned-content">
-                <form action='/registro' method="POST" class="m-5 d-flex flex-column align-items-center">
+                <form action='/registro' method="POST" class="m-5 d-flex flex-column align-items-center" novalidate>
                     <h2>REGÍSTRATE</h2>
 
                     <% if (mensajeError) { %>
@@ -38,8 +38,10 @@
 
                     <!-- Espacio para Contraseña -->
                     <div class="mb-3 w-50">
-                        <label for="password" class="form-label">Contraseña (min 6 caracteres)</label>
+                        <label for="password" class="form-label">Contraseña (mín. 8 caracteres)</label>
                         <input type="password" name="password" class="form-control" id="password" minlength="6" required>
+                        <small id="password-strength-text"></small>
+                        <div id="password-strength-bar" style="height: 5px; width: 100%; background-color: #ddd;"></div>
                     </div>
 
                     <!-- Espacio para Reescribir Contraseña -->
@@ -60,6 +62,11 @@
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <!-- Botón de registro -->
                     <button type="submit" class="btn btn-verde w-50">Regístrate</button>
+
+                    <script type="module">
+                        import { checkPasswordStrength } from '/utils/checkPasswordStrength.js';
+                        document.getElementById('password').addEventListener('input', checkPasswordStrength);
+                    </script>
                 </form>
             </div>
 
@@ -81,3 +88,5 @@
     </main>
 
 <%- include('../includes/end.ejs') %>
+
+
