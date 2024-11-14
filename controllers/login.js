@@ -22,12 +22,17 @@ const transporter = nodemailer.createTransport(
 // Controlador para mostrar la página de login
 exports.getLogin = (req, res) => {
     res.render('auth/login', {
-        titulo: 'Login',
+        titulo: 'Iniciar sesión',
         path: '/login',
-        mensajeError: null,
+        mensajeError: '',
+        validationErrors: [], // Asegura que validationErrors esté definido
+        datosAnteriores: {},  // Define datosAnteriores como un objeto vacío si no hay datos previos
         autenticado: false
     });
 };
+
+
+
 
 // Controlador para procesar el inicio de sesión
 exports.postLogin = (req, res) => {
@@ -244,13 +249,23 @@ exports.postNuevoPassword = (req, res, next) => {
 
 // Controlador para renderizar la página de registro
 exports.getRegistrarse = (req, res) => {
+    // Verificar si hay errores de validación
+    const errors = validationResult(req).array();  // Aquí recogemos los errores, si los hay
+
     res.render('auth/registro', {
         titulo: 'Registro',
         path: '/registro',
-        mensajeError: '',
+        mensajeError: '',  // Opcional: mensaje de error general si es necesario
+        validationErrors: errors,  // Pasamos los errores a la vista
         autenticado: false
     });
 };
+
+
+
+
+
+
 
 // Controlador para manejar el registro de nuevos usuarios
 exports.postRegistrarse = (req, res) => {
@@ -259,12 +274,13 @@ exports.postRegistrarse = (req, res) => {
     // Captura los errores de validación
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log(errors.array());
         return res.status(422).render('auth/registro', {
             path: '/registro',
             titulo: 'Registro',
             mensajeError: errors.array()[0].msg,
-            datosAnteriores: { nombre, dni, email, password },
-            validationErrors: errors.array() // Enviar todos los errores para mostrarlos en la vista
+            //datosAnteriores: { nombre, dni, email, password },//
+            validationErrors: errors.array()// Enviar todos los errores para mostrarlos en la vista
         });
     }
 

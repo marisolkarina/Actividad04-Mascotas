@@ -25,10 +25,26 @@
                     </div>
 
                     <!-- Espacio para Dirección de correo-->
-                    <div class="mb-3 w-50">
+                     <!-- Espacio para Dirección de correo-->
+                     <div class="mb-3 w-50">
                         <label for="email" class="form-label">Dirección de correo</label>
-                        <input type="email" name="email" class="form-control" id="email" required>
+                        <input 
+                            class="<%= validationErrors && validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>"
+                            type="email" 
+                            name="email" 
+                            id="email" 
+                            required
+                        >
+                        <% if (validationErrors && validationErrors.find(e => e.param === 'email')) { %>
+                            <div class="error-message">
+                                <%= validationErrors.find(e => e.param === 'email').msg %>
+                            </div>
+                        <% } %>
                     </div>
+                    
+                     
+
+                   
 
                     <!-- Espacio para DNI -->
                     <div class="mb-3 w-50">
@@ -37,17 +53,31 @@
                     </div>
 
                     <!-- Espacio para Contraseña -->
+                     
+                     <!-- Espacio para Contraseña -->
                     <div class="mb-3 w-50">
-                        <label for="password" class="form-label">Contraseña (mín. 8 caracteres)</label>
-                        <input type="password" name="password" class="form-control" id="password" minlength="6" required>
-                        <small id="password-strength-text"></small>
-                        <div id="password-strength-bar" style="height: 5px; width: 100%; background-color: #ddd;"></div>
+                    <label for="password" class="form-label">Contraseña (mín. 8 caracteres)</label>
+                    <input 
+                        class="<%= validationErrors.find(e => e.param === 'password') ? 'invalid' : '' %>"
+                        type="password" 
+                        name="password"  
+                        id="password" 
+                        minlength="6" required>
+                    <small id="password-strength-text"></small>
+                    <div id="password-strength-bar" style="height: 5px; width: 100%; background-color: #ddd;"></div>
                     </div>
 
+
                     <!-- Espacio para Reescribir Contraseña -->
+                     <!-- Espacio para Reescribir Contraseña -->
                     <div class="mb-3 w-50">
                         <label for="confirmPassword" class="form-label">Vuelva a escribir la contraseña</label>
-                        <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" minlength="6" required>
+                        <input 
+                            class="<%= validationErrors.find(e => e.param === 'confirmPassword') ? 'invalid' : '' %>"
+                            type="password" 
+                            name="confirmPassword"  
+                            id="confirmPassword" 
+                            minlength="6" required>
                     </div>
 
                     <!-- Mensaje de confirmación de correo -->
