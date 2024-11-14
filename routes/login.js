@@ -53,7 +53,7 @@ router.post('/login', [
         .notEmpty()
         .withMessage('El campo de contraseña no puede estar vacío')
         .isLength({min:8})
-        .isAlphanumeric()
+        
         .trim(),
 ], loginController.postLogin);
 
