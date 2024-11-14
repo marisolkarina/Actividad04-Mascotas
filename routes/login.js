@@ -47,10 +47,14 @@ router.post('/login', [
         .isEmail()
         .withMessage('Ingrese un email válido')
         .notEmpty()
-        .withMessage('El campo de email no puede estar vacío'),
+        .withMessage('El campo de email no puede estar vacío')
+        .normalizeEmail(),
     body('password')
         .notEmpty()
         .withMessage('El campo de contraseña no puede estar vacío')
+        .isLength({min:8})
+        .isAlphanumeric()
+        .trim(),
 ], loginController.postLogin);
 
 // Registro
@@ -65,6 +69,7 @@ router.post('/registro', [
     check('email')
         .isEmail()
         .withMessage('Por favor ingrese un email válido')
+        .normalizeEmail()
         .custom((value) => {
             return Usuario.findOne({ email: value }).then(usuarioDoc => {
                 if (usuarioDoc) {
@@ -91,7 +96,8 @@ router.post('/registro', [
         .matches(/[0-9]/)
         .withMessage('La contraseña debe contener al menos un número')
         .matches(/[^A-Za-z0-9]/)
-        .withMessage('La contraseña debe contener al menos un carácter especial (@, !, #, etc.)'),
+        .withMessage('La contraseña debe contener al menos un carácter especial (@, !, #, etc.)')
+        .trim(),
 
     // Confirmación de contraseña
     body('confirmPassword').custom((value, { req }) => {
