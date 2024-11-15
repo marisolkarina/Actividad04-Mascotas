@@ -2,9 +2,10 @@ const Pedido = require('../models/pedido');
 const Producto = require('../models/producto');
 const Usuario = require('../models/usuario')
 
+const {validationResult} =require('express-validator')
 //Administracion de Productos
 
-exports.getProductos = (req, res) => {
+exports.getProductos = (req, res,next) => {
 
     Producto
         .find()
@@ -16,21 +17,26 @@ exports.getProductos = (req, res) => {
                 autenticado: req.session.autenticado
             });
         }).catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 
 };
 
-exports.getCrearProducto = (req, res) => {
+exports.getCrearProducto = (req, res,next) => {
     res.render('admin/crear-editar-producto', {
         titulo: 'Crear Producto',
         path: '/admin/crear-producto',
         autenticado: req.session.autenticado,
-        modoEdicion: false
+        modoEdicion: false,
+        mensajeError : null,
+        tieneError:false,
+        erroresValidacion:[]
     })
 };
 
-exports.postCrearProducto = (req, res) => {
+exports.postCrearProducto = (req, res,next) => {
 
     const nombre = req.body.nombre;
     const urlImagen = req.body.urlImagen;
@@ -38,6 +44,30 @@ exports.postCrearProducto = (req, res) => {
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
+
+
+    const errors= validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).render('admin/crear-editar-producto', {
+          path: '/admin/crear-editar-producto',
+          titulo: 'Producto admin',
+          mensajeError: errors.array()[0].msg,
+          modoEdicion:false,
+          tieneError:true,
+          erroresValidacion: errors.array(),
+        
+          producto: {
+            nombre: nombre,
+            urlImagen: urlImagen,
+            descripcion: descripcion,
+            precio: precio,
+            categoria: categoria,
+            color: color,
+            idUsuario: req.usuario._id
+          },
+        });
+      }
 
     const producto = new Producto({
         nombre: nombre,
@@ -60,12 +90,14 @@ exports.postCrearProducto = (req, res) => {
             res.redirect('/admin/productos');
         })
         .catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
-exports.getEditarProducto = (req, res) => {
-
+exports.getEditarProducto = (req, res,next) => {
+    const modoEdicion = req.query.editar;
     const idProducto = req.params.idProducto;
 
     Producto.findById(idProducto)
@@ -76,10 +108,15 @@ exports.getEditarProducto = (req, res) => {
                 path: '/admin/editar-producto',
                 producto: producto,
                 modoEdicion: true,
-                autenticado: req.session.autenticado
+                autenticado: req.session.autenticado,
+                mensajeError : null,
+                tieneError:false,
+                erroresValidacion:[]
             })
         }).catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 
 }
@@ -92,6 +129,29 @@ exports.postEditarProducto = (req, res, next) => {
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
+
+    const errors= validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).render('admin/crear-editar-producto', {
+          path: '/admin/crear-editar-producto',
+          titulo: 'Producto admin',
+          mensajeError: errors.array()[0].msg,
+          modoEdicion:false,
+          tieneError:true,
+          erroresValidacion: errors.array(),
+        
+          producto: {
+            nombre: nombre,
+            urlImagen: urlImagen,
+            descripcion: descripcion,
+            precio: precio,
+            categoria: categoria,
+            color: color,
+            _id:idProducto
+          },
+        });
+      }
 
     Producto.findById(idProducto)
         .then((producto) => {
@@ -111,7 +171,9 @@ exports.postEditarProducto = (req, res, next) => {
             res.redirect('/admin/productos');
         })
         .catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
@@ -124,14 +186,16 @@ exports.postEliminarProducto = (req, res, next) => {
             console.log('Producto eliminado');
             res.redirect('/admin/productos');
         }).catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 
 };
 
 
 // Administracion de usuarios 
-exports.getUsuarios = (req, res) => {
+exports.getUsuarios = (req, res,next) => {
     Usuario.find()
         .then((usuarios) => {
             res.render('admin/usuarios', {
@@ -141,12 +205,14 @@ exports.getUsuarios = (req, res) => {
                 autenticado: req.session.autenticado
             });
         }).catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 
 };
 
-exports.getCrearUsuario = (req, res) => {
+exports.getCrearUsuario = (req, res,next) => {
     if (req.usuario.role !== 'admin') {
         return res.redirect('/');
     }
@@ -158,7 +224,7 @@ exports.getCrearUsuario = (req, res) => {
     })
 };
 
-exports.postCrearUsuario = (req, res) => {
+exports.postCrearUsuario = (req, res,next) => {
 
     const nombre = req.body.nombre;
     const email = req.body.email;
@@ -180,12 +246,14 @@ exports.postCrearUsuario = (req, res) => {
             res.redirect('/admin/usuarios');
         })
         .catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 
 }
 
-exports.getEditarUsuario = (req, res) => {
+exports.getEditarUsuario = (req, res,next) => {
 
     const idUsuario = req.params.idUsuario;
     Usuario.findById(idUsuario)
@@ -201,7 +269,9 @@ exports.getEditarUsuario = (req, res) => {
                 autenticado: req.session.autenticado
             })
         }).catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 
 }
@@ -229,7 +299,9 @@ exports.postEditarUsuario = (req, res, next) => {
             res.redirect('/admin/usuarios');
         })
         .catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
@@ -245,13 +317,15 @@ exports.postEliminarUsuario = (req, res, next) => {
             console.log('Usuario eliminado');
             res.redirect('/admin/usuarios');
         }).catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 
 }
 
 
-exports.getPedidos = (req, res) => {
+exports.getPedidos = (req, res,next) => {
 
     Pedido
         .find()
@@ -263,11 +337,13 @@ exports.getPedidos = (req, res) => {
                 autenticado: req.session.autenticado
             })
         }).catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
-exports.getEditarPedido = (req, res) => {
+exports.getEditarPedido = (req, res,next) => {
     const idPedido = req.params.idPedido;
     console.log(idPedido)
 
@@ -283,7 +359,9 @@ exports.getEditarPedido = (req, res) => {
                 autenticado: req.session.autenticado
             })
         }).catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 }
 
@@ -321,6 +399,8 @@ exports.postEditarPedido = (req, res, next) => {
             res.redirect('/admin/pedidos');
         })
         .catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 }

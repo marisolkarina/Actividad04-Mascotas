@@ -29,11 +29,19 @@
             </div>
     
             <!-- Campo Password -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label for="password" class="form-label">Password Encriptada</label>
                 <p><%= usuario.password %></p>
-            </div>
+            </div> -->
     
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password (dejar en blanco si no desea cambiarla)</label>
+                <input
+                    class="form-control"
+                    type="password" name="password" id="password" value="<% if (modoEdicion) { %><%= usuario.password %><% } %>">
+            </div>
+            
             <!-- Campo oculto para el ID si está en modo edición -->
             <% if (modoEdicion) { %>
                 <input type="hidden" value="<%= usuario._id %>" name="idUsuario">

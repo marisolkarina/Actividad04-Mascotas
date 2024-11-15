@@ -5,7 +5,7 @@ const isAuth = require('../middleware/is-auth');
 
 
 const router = express.Router();
-
+const { body } = require('express-validator');
 
 // /admin/productos
 router.get('/productos', isAuth, adminController.getProductos);
@@ -13,12 +13,57 @@ router.get('/productos', isAuth, adminController.getProductos);
 // /admin/crear-producto
 router.get('/crear-producto', isAuth, adminController.getCrearProducto);
 
-router.post('/crear-producto', isAuth, adminController.postCrearProducto);
+router.post('/crear-producto',
+    [
+        body('nombre')
+            .isString().withMessage('El nombre debe ser un texto')
+            .notEmpty().withMessage('El nombre no puede estar vacío')
+            .trim()
+            .isLength({ min: 3, max: 50 }).withMessage('El nombre debe tener entre 3 y 50 caracteres'),
+        body('urlImagen')
+            .isURL().withMessage('La imagen debe ser una URL válida'),
+        body('precio')
+            .isFloat({ gt: 0 }).withMessage('El precio debe ser un número mayor a 0')
+            .trim(),
+        body('color')
+            .isString().withMessage('El color debe ser un texto')
+            .notEmpty().withMessage('El color no puede estar vacío')
+            .trim(),
+        body('categoria')
+            .isString().withMessage('La categoría debe ser un texto')
+            .notEmpty().withMessage('La categoría no puede estar vacía'),
+        body('descripcion')
+            .isLength({ min: 10, max: 1000 })
+    ]
+    , isAuth, adminController.postCrearProducto);
 
 // /admin/editar-producto
 router.get('/editar-producto/:idProducto', isAuth, adminController.getEditarProducto);
 
-router.post('/editar-producto', isAuth, adminController.postEditarProducto);
+router.post('/editar-producto',
+    [
+        body('nombre')
+            .isString().withMessage('El nombre debe ser un texto')
+            .notEmpty().withMessage('El nombre no puede estar vacío')
+            .trim()
+            .isLength({ min: 3, max: 50 }).withMessage('El nombre debe tener entre 3 y 50 caracteres'),
+        body('urlImagen')
+            .isURL().withMessage('La imagen debe ser una URL válida'),
+        body('precio')
+            .isFloat({ gt: 0 }).withMessage('El precio debe ser un número mayor a 0')
+            .trim(),
+        body('color')
+            .isString().withMessage('El color debe ser un texto')
+            .notEmpty().withMessage('El color no puede estar vacío')
+            .trim(),
+        body('categoria')
+            .isString().withMessage('La categoría debe ser un texto')
+            .notEmpty().withMessage('La categoría no puede estar vacía'),
+        body('descripcion')
+            .isLength({ min: 10, max: 1000 })
+    ]
+
+    , isAuth, adminController.postEditarProducto);
 
 // /admin/eliminar-producto
 router.post('/eliminar-producto', isAuth, adminController.postEliminarProducto);
@@ -29,12 +74,34 @@ router.get('/usuarios', isAuth, adminController.getUsuarios);
 // // /admin/usuarios
 router.get('/crear-usuario', isAuth, adminController.getCrearUsuario);
 
-router.post('/crear-usuario', isAuth, adminController.postCrearUsuario);
+router.post('/crear-usuario',
+    [
+        body('nombre')
+            .isString().withMessage('El nombre debe ser un texto')
+            .notEmpty().withMessage('El nombre no puede estar vacío')
+            .trim(),
+        body('email')
+            .isEmail().withMessage('El correo debe ser un email válido')
+            .normalizeEmail()
+            .trim()
+    ]
+    , isAuth, adminController.postCrearUsuario);
 
 // // /admin/editar-usuario
 router.get('/editar-usuario/:idUsuario', isAuth, adminController.getEditarUsuario);
 
-router.post('/editar-usuario', isAuth, adminController.postEditarUsuario);
+router.post('/editar-usuario',
+    [
+        body('nombre')
+            .isString().withMessage('El nombre debe ser un texto')
+            .notEmpty().withMessage('El nombre no puede estar vacío')
+            .trim(),
+        body('email')
+            .isEmail().withMessage('El correo debe ser un email válido')
+            .normalizeEmail()
+            .trim()
+    ]
+    , isAuth, adminController.postEditarUsuario);
 
 // // /admin/eliminar-usuario
 router.post('/eliminar-usuario', isAuth, adminController.postEliminarUsuario);
@@ -45,6 +112,21 @@ router.get('/pedidos', isAuth, adminController.getPedidos);
 // /admin/editar-pedido
 router.get('/editar-pedido/:idPedido', isAuth, adminController.getEditarPedido);
 
-router.post('/editar-pedido', isAuth, adminController.postEditarPedido);
+router.post('/editar-pedido',
+    [
+        //para validar la fecha en base al formato de fecha mostrado de la base de dato
+        body('fechaEntrega')
+            .isISO8601().withMessage('La fecha de entrega debe ser una fecha válida')
+            .custom(value => {
+                const date = new Date(value);
+                if (date.toString() === 'Invalid Date') {
+                    throw new Error('La fecha de entrega no es válida');
+                }
+                return true;
+            }),
+        body('cantidadProducto')
+            .isInt({ gt: 0 }).withMessage('La cantidad debe ser un número entero mayor a 0')
+    ]
+    , isAuth, adminController.postEditarPedido);
 
 module.exports = router;

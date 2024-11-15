@@ -22,7 +22,7 @@
                     <div class="mb-3 w-50">
                         <label for="email" class="form-label">Dirección de correo</label>
                         <input 
-                            class="<%= validationErrors && validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>"
+                            class="form-control <%= validationErrors && validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>"
                             type="email" 
                             name="email" 
                             id="exampleInputEmail1" 
@@ -41,6 +41,7 @@
 
                         <label for="password" class="form-label">Contraseña</label>
                         <input 
+                            class="form-control"
                             type="password" 
                             name="password" 
                             id="exampleInputPassword1" 

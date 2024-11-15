@@ -46,10 +46,15 @@ app.use((req, res, next) => {
   }
   Usuario.findById(req.session.usuario._id)
     .then(usuario => {
+      if (!usuario) {
+        return next();
+      }
         req.usuario = usuario;
         next();
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      next(new Error(err));
+    });
 
 });
 
@@ -63,7 +68,18 @@ app.use(loginRoutes);
 app.use('/admin', adminRoutes);
 app.use(tiendaRoutes);
 
+app.get('/500',errorController.get500)
 app.use(errorController.get404);
+
+app.use((err, req, res, next) => {
+  console.log(err);
+  // res.redirect('/500');
+  res.status(500).render('500', {
+    titulo: 'Error!',
+    path: '/500',
+    autenticado: req.session.autenticado
+  });
+})
 
 mongoose
   .connect(MONGODB_URI)
@@ -84,8 +100,10 @@ mongoose
         usuario.save();
       }
     })
-    app.listen(3000);
+    app.listen(3004);
   })
   .catch(err => {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
   });

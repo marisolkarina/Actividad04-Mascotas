@@ -1,7 +1,7 @@
 const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const {validationResult} = require('express-validator');
+const { validationResult } = require('express-validator');
 
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
@@ -9,18 +9,18 @@ const sendgridTransport = require('nodemailer-sendgrid-transport');
 const APIKEY = '';
 
 const transporter = nodemailer.createTransport(
-  sendgridTransport({
-    auth: {
-      api_key:
-        APIKEY
-    }
-  })
+    sendgridTransport({
+        auth: {
+            api_key:
+                APIKEY
+        }
+    })
 );
 
 // LOGIN
 
 // Controlador para mostrar la página de login
-exports.getLogin = (req, res) => {
+exports.getLogin = (req, res,next) => {
     res.render('auth/login', {
         titulo: 'Iniciar sesión',
         path: '/login',
@@ -35,7 +35,7 @@ exports.getLogin = (req, res) => {
 
 
 // Controlador para procesar el inicio de sesión
-exports.postLogin = (req, res) => {
+exports.postLogin = (req, res,next) => {
     const { email, password } = req.body;
 
     // Captura los errores de validación
@@ -58,7 +58,7 @@ exports.postLogin = (req, res) => {
                     path: '/login',
                     mensajeError: 'Email o contraseña incorrecto.',
                     datosAnteriores: { email, password },
-                    validationErrors: [] 
+                    validationErrors: []
                 });
             }
 
@@ -78,7 +78,7 @@ exports.postLogin = (req, res) => {
                     req.session.usuario = usuario;
                     req.session.save((err) => {
                         if (err) console.log('Error al guardar la sesión:', err);
-                        
+
                         if (usuario.role === 'admin') {
                             res.redirect('/admin/productos');
                         } else {
@@ -88,13 +88,15 @@ exports.postLogin = (req, res) => {
                 });
         })
         .catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
 
 // Controlador para renderizar la página de recuperación de contraseña
-exports.getRecuperarContrasena = (req, res) => {
+exports.getRecuperarContrasena = (req, res,next) => {
     res.render('auth/recuperar-contrasena', {
         titulo: 'Recuperar Contraseña',
         path: '/recuperar-contrasena',
@@ -105,7 +107,7 @@ exports.getRecuperarContrasena = (req, res) => {
 };
 
 // Controlador para manejar el envío del formulario de recuperación de contraseña
-exports.postRecuperarContrasena = (req, res) => {
+exports.postRecuperarContrasena = (req, res,next) => {
     const email = req.body.email;
 
     const errors = validationResult(req);
@@ -121,7 +123,9 @@ exports.postRecuperarContrasena = (req, res) => {
 
     crypto.randomBytes(32, (err, buffer) => {
         if (err) {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
             return res.redirect('/recuperar-contrasena');
         }
 
@@ -154,7 +158,9 @@ exports.postRecuperarContrasena = (req, res) => {
                 });
             })
             .catch((err) => {
-                console.log(err);
+                const error = new Error(err);
+                error.httpStatusCode = 500;
+                return next(error);
             });
     });
 };
@@ -185,7 +191,9 @@ exports.getNuevoPassword = (req, res, next) => {
             });
         })
         .catch(err => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
             res.redirect('/login');
         });
 };
@@ -208,7 +216,7 @@ exports.postNuevoPassword = (req, res, next) => {
     }
 
     let usuarioParaActualizar;
-  
+
     Usuario.findOne({
         tokenReinicio: tokenPassword,
         expiracionTokenReinicio: { $gt: Date.now() },
@@ -239,7 +247,9 @@ exports.postNuevoPassword = (req, res, next) => {
             res.redirect('/login');
         })
         .catch(err => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
@@ -248,7 +258,7 @@ exports.postNuevoPassword = (req, res, next) => {
 // REGISTRO
 
 // Controlador para renderizar la página de registro
-exports.getRegistrarse = (req, res) => {
+exports.getRegistrarse = (req, res,next) => {
     // Verificar si hay errores de validación
     const errors = validationResult(req).array();  // Aquí recogemos los errores, si los hay
 
@@ -309,14 +319,18 @@ exports.postRegistrarse = (req, res) => {
             });
         })
         .catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 };
 
 
 exports.postSalir = (req, res, next) => {
     req.session.destroy(err => {
-        console.log(err);
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
         res.redirect('/');
     })
 }
