@@ -5,6 +5,8 @@ const Usuario = require('../models/usuario')
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
+const file = require('../utils/file')
+
 
 //Administracion de Productos
 
@@ -152,9 +154,6 @@ exports.postEditarProducto = (req, res, next) => {
     const color = req.body.color;
     const imagen = req.file;
 
-    let urlImagen = '';
-    if (imagen) urlImagen = imagen.path;
-
     if (!imagen) {
         return res.status(422).render('admin/crear-editar-producto', {
             path: '/admin/crear-editar-producto',
@@ -201,7 +200,10 @@ exports.postEditarProducto = (req, res, next) => {
                 return res.redirect('/');
             }
             producto.nombre = nombre;
-            producto.urlImagen = urlImagen;
+            if (imagen) {
+                file.deleteFile(producto.urlImagen);
+                producto.urlImagen = imagen.path;
+            }
             producto.descripcion = descripcion;
             producto.precio = precio;
             producto.categoria = categoria;
@@ -226,16 +228,22 @@ exports.postEliminarProducto = (req, res, next) => {
         return res.redirect('/');
     }
 
-    Producto.findByIdAndDelete(idProducto)
-        .then((result) => {
-            console.log('Producto eliminado');
+    Producto.findById(idProducto)
+        .then(producto => {
+            if(!producto) {
+                return next(new Error('Producto no se ha encontrado'));
+            }
+            file.deleteFile(producto.urlImagen);
+            return Producto.findByIdAndDelete(idProducto);
+        })
+        .then(result => {
             res.redirect('/admin/productos');
-        }).catch((err) => {
+        })
+        .catch(err => {
             const error = new Error(err);
             error.httpStatusCode = 500;
             return next(error);
         });
-
 };
 
 
