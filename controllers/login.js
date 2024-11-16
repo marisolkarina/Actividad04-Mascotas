@@ -125,7 +125,7 @@ exports.postRecuperarContrasena = (req, res,next) => {
         if (err) {
             const error = new Error(err);
             error.httpStatusCode = 500;
-            return next(error);
+            next(error);
             return res.redirect('/recuperar-contrasena');
         }
 
@@ -193,8 +193,8 @@ exports.getNuevoPassword = (req, res, next) => {
         .catch(err => {
             const error = new Error(err);
             error.httpStatusCode = 500;
-            return next(error);
-            res.redirect('/login');
+            next(error);
+            return res.redirect('/login');
         });
 };
 
@@ -271,12 +271,6 @@ exports.getRegistrarse = (req, res,next) => {
     });
 };
 
-
-
-
-
-
-
 // Controlador para manejar el registro de nuevos usuarios
 exports.postRegistrarse = (req, res) => {
     const { nombre, dni, email, password } = req.body;
@@ -330,7 +324,7 @@ exports.postSalir = (req, res, next) => {
     req.session.destroy(err => {
         const error = new Error(err);
         error.httpStatusCode = 500;
-        return next(error);
-        res.redirect('/');
+        next(error);
+        return res.redirect('/');
     })
 }

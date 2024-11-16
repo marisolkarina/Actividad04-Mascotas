@@ -20,16 +20,17 @@
                     
                     <!-- Espacio para Nombres -->
                     <div class="mb-3 w-50">
-                        <label for="nombres" class="form-label">Nombres</label>
-                        <input type="text" name="nombre" class="form-control" id="nombre" required>
+                        <label for="nombre" class="form-label">Nombres</label>
+                        <input type="text" name="nombre" 
+                            class="form-control <%= validationErrors && validationErrors.find(e => e.path === 'nombre') ? 'border-danger' : '' %>" 
+                            id="nombre" required>
                     </div>
 
                     <!-- Espacio para Dirección de correo-->
-                     <!-- Espacio para Dirección de correo-->
-                     <div class="mb-3 w-50">
+                    <div class="mb-3 w-50">
                         <label for="email" class="form-label">Dirección de correo</label>
                         <input 
-                            class="<%= validationErrors && validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>"
+                            class="form-control <%= validationErrors && validationErrors.find(e => e.path === 'email') ? 'border-danger' : '' %>"
                             type="email" 
                             name="email" 
                             id="email" 
@@ -41,24 +42,23 @@
                             </div>
                         <% } %>
                     </div>
-                    
-                     
-
-                   
 
                     <!-- Espacio para DNI -->
                     <div class="mb-3 w-50">
                         <label for="dni" class="form-label">DNI</label>
-                        <input type="text" name="dni" class="form-control" id="dni" required>
+                        <input type="text" name="dni" 
+                            class="form-control <%= validationErrors && validationErrors.find(e => e.path === 'dni') ? 'border-danger' : '' %>"
+                            id="dni" required>
                     </div>
 
                     <!-- Espacio para Contraseña -->
                      
                      <!-- Espacio para Contraseña -->
                     <div class="mb-3 w-50">
-                    <label for="password" class="form-label">Contraseña (mín. 8 caracteres)</label>
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div class="form-text">Min: 8 caracteres (incluir letra mayúscula y minúscula, número y caracter especial)</div>
                     <input 
-                        class="<%= validationErrors.find(e => e.param === 'password') ? 'invalid' : '' %>"
+                        class="form-control <%= validationErrors.find(e => e.path === 'password') ? 'border-danger' : '' %>"
                         type="password" 
                         name="password"  
                         id="password" 
@@ -73,7 +73,7 @@
                     <div class="mb-3 w-50">
                         <label for="confirmPassword" class="form-label">Vuelva a escribir la contraseña</label>
                         <input 
-                            class="<%= validationErrors.find(e => e.param === 'confirmPassword') ? 'invalid' : '' %>"
+                            class="form-control <%= validationErrors.find(e => e.path === 'confirmPassword') ? 'border-danger' : '' %>"
                             type="password" 
                             name="confirmPassword"  
                             id="confirmPassword" 

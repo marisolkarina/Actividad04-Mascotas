@@ -22,7 +22,7 @@
                     <div class="mb-3 w-50">
                         <label for="email" class="form-label">Dirección de correo</label>
                         <input 
-                            class="form-control <%= validationErrors && validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>"
+                            class="form-control <%= validationErrors && validationErrors.find(e => e.path === 'email') ? 'border-danger' : '' %>"
                             type="email" 
                             name="email" 
                             id="exampleInputEmail1" 

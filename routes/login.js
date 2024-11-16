@@ -83,7 +83,7 @@ router.post('/registro', [
         .isNumeric()
         .withMessage('Ingrese un DNI válido.')
         .isLength({ min: 8, max: 8 })
-        .withMessage('Ingrese un DNI válido (Max. 8 dígitos).'),
+        .withMessage('Ingrese un DNI válido (8 dígitos).'),
 
     // Validación de contraseña: longitud, letras mayúsculas y minúsculas, números y caracteres especiales
     body('password')

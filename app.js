@@ -100,7 +100,7 @@ mongoose
         usuario.save();
       }
     })
-    app.listen(3004);
+    app.listen(3000);
   })
   .catch(err => {
     const error = new Error(err);

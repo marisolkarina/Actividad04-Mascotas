@@ -3,9 +3,9 @@ const express = require('express');
 const adminController = require('../controllers/admin');
 const isAuth = require('../middleware/is-auth');
 
-
+const { check, body } = require('express-validator');
 const router = express.Router();
-const { body } = require('express-validator');
+const Usuario = require('../models/usuario');
 
 // /admin/productos
 router.get('/productos', isAuth, adminController.getProductos);
@@ -26,11 +26,9 @@ router.post('/crear-producto',
             .isFloat({ gt: 0 }).withMessage('El precio debe ser un número mayor a 0')
             .trim(),
         body('color')
-            .isString().withMessage('El color debe ser un texto')
             .notEmpty().withMessage('El color no puede estar vacío')
             .trim(),
         body('categoria')
-            .isString().withMessage('La categoría debe ser un texto')
             .notEmpty().withMessage('La categoría no puede estar vacía'),
         body('descripcion')
             .isLength({ min: 10, max: 1000 })
@@ -53,11 +51,9 @@ router.post('/editar-producto',
             .isFloat({ gt: 0 }).withMessage('El precio debe ser un número mayor a 0')
             .trim(),
         body('color')
-            .isString().withMessage('El color debe ser un texto')
             .notEmpty().withMessage('El color no puede estar vacío')
             .trim(),
         body('categoria')
-            .isString().withMessage('La categoría debe ser un texto')
             .notEmpty().withMessage('La categoría no puede estar vacía'),
         body('descripcion')
             .isLength({ min: 10, max: 1000 })
@@ -80,10 +76,34 @@ router.post('/crear-usuario',
             .isString().withMessage('El nombre debe ser un texto')
             .notEmpty().withMessage('El nombre no puede estar vacío')
             .trim(),
-        body('email')
-            .isEmail().withMessage('El correo debe ser un email válido')
+        body('dni')
+            .isNumeric()
+            .withMessage('Ingrese un DNI válido.')
+            .isLength({ min: 8, max: 8 })
+            .withMessage('Ingrese un DNI válido (8 dígitos).'),
+        check('email')
+            .isEmail()
+            .withMessage('El correo debe ser un email válido')
             .normalizeEmail()
-            .trim()
+            .custom((value) => {
+                return Usuario.findOne({ email: value }).then(usuarioDoc => {
+                    if (usuarioDoc) {
+                        return Promise.reject('El usuario ingresado ya existe');
+                    }
+                });
+            }),
+        body('password')
+            .isLength({ min: 8 })
+            .withMessage('La contraseña debe tener al menos 8 caracteres')
+            .matches(/[A-Z]/)
+            .withMessage('La contraseña debe contener al menos una letra mayúscula')
+            .matches(/[a-z]/)
+            .withMessage('La contraseña debe contener al menos una letra minúscula')
+            .matches(/[0-9]/)
+            .withMessage('La contraseña debe contener al menos un número')
+            .matches(/[^A-Za-z0-9]/)
+            .withMessage('La contraseña debe contener al menos un carácter especial (@, !, #, etc.)')
+            .trim(),
     ]
     , isAuth, adminController.postCrearUsuario);
 
@@ -96,10 +116,14 @@ router.post('/editar-usuario',
             .isString().withMessage('El nombre debe ser un texto')
             .notEmpty().withMessage('El nombre no puede estar vacío')
             .trim(),
+        body('dni')
+            .isNumeric()
+            .withMessage('Ingrese un DNI válido.')
+            .isLength({ min: 8, max: 8 })
+            .withMessage('Ingrese un DNI válido (8 dígitos).'),
         body('email')
             .isEmail().withMessage('El correo debe ser un email válido')
             .normalizeEmail()
-            .trim()
     ]
     , isAuth, adminController.postEditarUsuario);
 

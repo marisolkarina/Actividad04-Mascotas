@@ -7,10 +7,25 @@
     <%- include('../includes/navigation.ejs') %>
     <main class="container mt-4">
         <form action="/admin/<% if (modoEdicion) { %>editar-usuario<% } else { %>crear-usuario<% } %>" method="POST" class="p-4 border rounded">
+            
+            <% if (mensajeError) { %>
+                <div class="alert alert-danger"><%= mensajeError %></div>
+            <% } %>
+
             <!-- Campo Nombre -->
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" class="form-control" name="nombre" id="nombre" value="<% if (modoEdicion) { %><%= usuario.nombre %><% } %>">
+                <input type="text" 
+                    class="form-control <%= validationErrors && validationErrors.find(e => e.path === 'nombre') ? 'border-danger' : '' %>" 
+                    name="nombre" id="nombre" value="<% if (modoEdicion) { %><%= usuario.nombre %><% } %>">
+            </div>
+
+            <!-- Campo DNI -->
+            <div class="mb-3">
+                <label for="dni" class="form-label">DNI</label>
+                <input type="text" name="dni" 
+                    class="form-control <%= validationErrors && validationErrors.find(e => e.path === 'dni') ? 'border-danger' : '' %>" 
+                    id="dni" value="<% if (modoEdicion) { %><%= usuario.dni %><% } %>" required>
             </div>
             
             <!-- Campo Tipo de Usuario -->
@@ -25,21 +40,20 @@
             <!-- Campo Email -->
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" id="email" value="<% if (modoEdicion) { %><%= usuario.email %><% } %>">
+                <input type="email" 
+                    class="form-control <%= validationErrors && validationErrors.find(e => e.path === 'email') ? 'border-danger' : '' %>"
+                    name="email" id="email" 
+                    value="<% if (modoEdicion) { %><%= usuario.email %><% } %>">
             </div>
     
-            <!-- Campo Password -->
-            <!-- <div class="mb-3">
-                <label for="password" class="form-label">Password Encriptada</label>
-                <p><%= usuario.password %></p>
-            </div> -->
-    
-
             <div class="mb-3">
-                <label for="password" class="form-label">Password (dejar en blanco si no desea cambiarla)</label>
+                <label for="password" class="form-label">Password <% if (modoEdicion) { %>encriptada<% } %></label>
+                <% if (!modoEdicion) { %>
+                    <div class="form-text">Min: 8 caracteres (incluir letra mayúscula y minúscula, número y caracter especial)</div>
+                <% } %>
                 <input
-                    class="form-control"
-                    type="password" name="password" id="password" value="<% if (modoEdicion) { %><%= usuario.password %><% } %>">
+                    class="form-control <%= validationErrors.find(e => e.path === 'password') ? 'border-danger' : '' %>"
+                    type="password" name="password" id="password" <% if (modoEdicion) { %> value="<%= usuario.password %>" readonly<% } %>>
             </div>
             
             <!-- Campo oculto para el ID si está en modo edición -->
