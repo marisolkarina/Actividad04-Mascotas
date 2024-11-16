@@ -42,14 +42,35 @@ exports.getCrearProducto = (req, res,next) => {
 exports.postCrearProducto = (req, res,next) => {
 
     const nombre = req.body.nombre;
-    const urlImagen = req.body.urlImagen;
     const precio = parseFloat(req.body.precio);
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
+    const imagen = req.file;
 
+    const urlImagen = '';
+    if (imagen) urlImagen = imagen.path;
 
-    const errors= validationResult(req);
+    if (!imagen) {
+        return res.status(422).render('admin/crear-editar-producto', {
+            path: '/admin/crear-editar-producto',
+            titulo: 'Crear Producto',
+            modoEdicion: false,
+            tieneError: true,
+            mensajeError: 'Debe cargar una imagen del producto',
+            validationErrors: [],
+            producto: {
+                nombre: nombre,
+                descripcion: descripcion,
+                precio: precio,
+                categoria: categoria,
+                color: color,
+            },
+        });
+
+    }
+
+    const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
         return res.status(422).render('admin/crear-editar-producto', {
@@ -62,7 +83,6 @@ exports.postCrearProducto = (req, res,next) => {
             
             producto: {
                 nombre: nombre,
-                urlImagen: urlImagen,
                 descripcion: descripcion,
                 precio: precio,
                 categoria: categoria,
@@ -100,7 +120,6 @@ exports.postCrearProducto = (req, res,next) => {
 };
 
 exports.getEditarProducto = (req, res,next) => {
-    const modoEdicion = req.query.editar;
     const idProducto = req.params.idProducto;
 
     Producto.findById(idProducto)
@@ -128,10 +147,31 @@ exports.postEditarProducto = (req, res, next) => {
     const idProducto = req.body.idProducto;
     const nombre = req.body.nombre;
     const precio = parseFloat(req.body.precio);
-    const urlImagen = req.body.urlImagen;
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
+    const imagen = req.file;
+
+    const urlImagen = '';
+    if (imagen) urlImagen = imagen.path;
+
+    if (!imagen) {
+        return res.status(422).render('admin/crear-editar-producto', {
+            path: '/admin/crear-editar-producto',
+            titulo: 'Editar Producto',
+            modoEdicion: true,
+            tieneError: true,
+            mensajeError: 'Debe cargar una imagen del producto',
+            validationErrors: [],
+            producto: {
+                nombre: nombre,
+                descripcion: descripcion,
+                precio: precio,
+                categoria: categoria,
+                color: color,
+            },
+        });
+    }
 
     const errors = validationResult(req);
 
@@ -146,7 +186,6 @@ exports.postEditarProducto = (req, res, next) => {
         
             producto: {
                 nombre: nombre,
-                urlImagen: urlImagen,
                 descripcion: descripcion,
                 precio: precio,
                 categoria: categoria,

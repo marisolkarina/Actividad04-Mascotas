@@ -14,6 +14,7 @@
                     <% } %>
                         <%if (autenticado) { %>
                             <form
+                                enctype="multipart/form-data"
                                 action="/admin/<% if (modoEdicion) { %>editar-producto<% } else { %>crear-producto<% } %>"
                                 method="POST" class="p-4 border rounded">
                                 <!-- Campo Nombre -->
@@ -27,11 +28,12 @@
 
                                 <!-- Campo URL Imagen -->
                                 <div class="mb-3">
-                                    <label for="urlImagen" class="form-label">URL Imagen</label>
-                                    <input
+                                    <label for="imagen" class="form-label">Imagen</label>
+                                    <input type="file" name="imagen" id="imagen" class="btn btn-outline-warning">
+                                    <!-- <input
                                         class="form-control <%= validationErrors.find(e => e.path === 'urlImagen') ? 'border-danger' : '' %>"
                                         type="text" name="urlImagen" id="urlImagen"
-                                        value="<% if (modoEdicion || tieneError) { %><%= producto.urlImagen %><% } %>">
+                                        value="<% if (modoEdicion || tieneError) { %><%= producto.urlImagen %><% } %>"> -->
                                 </div>
 
                                 <!-- Campo Precio -->

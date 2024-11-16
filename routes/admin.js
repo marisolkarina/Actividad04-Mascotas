@@ -20,8 +20,8 @@ router.post('/crear-producto',
             .notEmpty().withMessage('El nombre no puede estar vacío')
             .trim()
             .isLength({ min: 3, max: 50 }).withMessage('El nombre debe tener entre 3 y 50 caracteres'),
-        body('urlImagen')
-            .isURL().withMessage('La imagen debe ser una URL válida'),
+        // body('urlImagen')
+        //     .isURL().withMessage('La imagen debe ser una URL válida'),
         body('precio')
             .isFloat({ gt: 0 }).withMessage('El precio debe ser un número mayor a 0')
             .trim(),
@@ -45,10 +45,11 @@ router.post('/editar-producto',
             .notEmpty().withMessage('El nombre no puede estar vacío')
             .trim()
             .isLength({ min: 3, max: 50 }).withMessage('El nombre debe tener entre 3 y 50 caracteres'),
-        body('urlImagen')
-            .isURL().withMessage('La imagen debe ser una URL válida'),
+        // body('urlImagen')
+        //     .isURL().withMessage('La imagen debe ser una URL válida'),
         body('precio')
             .isFloat({ gt: 0 }).withMessage('El precio debe ser un número mayor a 0')
+            .notEmpty().withMessage('El precio no puede estar vacío')
             .trim(),
         body('color')
             .notEmpty().withMessage('El color no puede estar vacío')

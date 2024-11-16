@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 
 const csrf = require('csurf');
+const multer = require('multer');
 
 const mongoose = require('mongoose');
 const Usuario = require('./models/usuario');
@@ -28,11 +29,39 @@ const store = new MongoDBStore({
 
 const csrfProtection = csrf();
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'imagenes');
+  },
+  filename: (req, file, cb) => {
+    // Windows no permite guardar archivos con el signo ':'
+    // Cambiamos ':' por '_'
+    cb(null, new Date().toISOString().replace(/:/g, '_') + '-' + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/jpg' ||
+    file.mimetype === 'image/jpeg' ||
+    file.mimetype === 'image/webp'
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('imagen'));
+
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/imagenes', express.static(path.join(__dirname, 'imagenes')));
+
 app.use('/utils', express.static(path.join(__dirname, 'utils')));
 app.use(express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
 app.use(session({ secret: 'algo muy secreto', resave: false, saveUninitialized: false, store: store }));
@@ -68,7 +97,7 @@ app.use(loginRoutes);
 app.use('/admin', adminRoutes);
 app.use(tiendaRoutes);
 
-app.get('/500',errorController.get500)
+app.get('/500',errorController.get500);
 app.use(errorController.get404);
 
 app.use((err, req, res, next) => {
@@ -89,8 +118,8 @@ mongoose
       if (!usuario) {
         const usuario = new Usuario({
           nombre: 'Marisol Pachauri',
-          email: 'marisol@mail.com',
-          password: '123456',
+          email: 'mpachaurir@uni.pe',
+          password: 'Admin01!',
           role: 'admin',
           carrito: {
             items: [],
