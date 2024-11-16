@@ -41,7 +41,7 @@
 
                         <label for="password" class="form-label">Contraseña</label>
                         <input 
-                            class="form-control"
+                            class="form-control <%= validationErrors && validationErrors.find(e => e.path === 'password') ? 'border-danger' : '' %>"
                             type="password" 
                             name="password" 
                             id="exampleInputPassword1" 
