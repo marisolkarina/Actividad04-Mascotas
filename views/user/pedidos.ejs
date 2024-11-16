@@ -24,6 +24,7 @@
                             <% } %> 
                         </div>
                         <p>Precio total: <%= pedido.precioTotal %></p>
+                        <a href="/pedidos/<%= pedido._id %>">Comprobante</a>
                         <form action="/cancelar-pedido" method="POST">
                             <input type="hidden" value="<%= pedido._id %>" name="idPedido">
                             <% if (pedido.estado !== 'cancelado') { %>
