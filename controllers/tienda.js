@@ -3,6 +3,8 @@ const Pedido = require('../models/pedido');
 const Usuario = require('../models/usuario');
 const fs = require('fs');
 const path = require('path');
+const PDFDocument = require('pdfkit');
+
 
 exports.getProductos = (req, res, next) => {
 
@@ -360,13 +362,40 @@ exports.getComprobante = (req, res, next) => {
             const nombreComprobante = 'comprobante-' + idPedido + '.pdf';
             // const nombreComprobante = 'comprobante' + '.pdf';
             const rutaComprobante = path.join('data', 'comprobantes', nombreComprobante);
-            const file = fs.createReadStream(rutaComprobante);
+
+
+            const pdfDoc = new PDFDocument();
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader(
                 'Content-Disposition',
                 'inline; filename="' + nombreComprobante + '"'
             );
-            file.pipe(res);
+            pdfDoc.pipe(fs.createWriteStream(rutaComprobante));
+            pdfDoc.pipe(res);
+
+            pdfDoc.fontSize(20).text('Comprobante', {
+                underline: true
+            });
+            pdfDoc.fontSize(12).text('---------------------------------------');
+            let precioTotal = 0;
+            pedido.productos.forEach(prod => {
+                precioTotal += prod.cantidad * prod.producto.precio;
+                pdfDoc
+                    .fontSize(12)
+                    .text(
+                        prod.producto.nombre +
+                        ' - ' +
+                        prod.cantidad +
+                        ' x ' +
+                        'S/ ' +
+                        prod.producto.precio
+                    );
+            });
+            pdfDoc.text('---------------------------------------');
+            pdfDoc.fontSize(18).text('Precio Total: S/' + precioTotal);
+
+            pdfDoc.end();
+
         })
         .catch(err => next(err));
-  };
+};
