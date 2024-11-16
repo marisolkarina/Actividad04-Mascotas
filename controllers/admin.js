@@ -190,7 +190,7 @@ exports.postEditarProducto = (req, res, next) => {
                 precio: precio,
                 categoria: categoria,
                 color: color,
-                _id:idProducto
+                _id: idProducto
             },
         });
       }
@@ -222,8 +222,11 @@ exports.postEditarProducto = (req, res, next) => {
 exports.postEliminarProducto = (req, res, next) => {
 
     const idProducto = req.body.idProducto;
+    if (req.usuario.role !== 'admin') {
+        return res.redirect('/');
+    }
 
-    Producto.deleteOne({_id: idProducto, role: 'admin'})
+    Producto.findByIdAndDelete(idProducto)
         .then((result) => {
             console.log('Producto eliminado');
             res.redirect('/admin/productos');
@@ -367,7 +370,7 @@ exports.postEditarUsuario = (req, res, next) => {
                 dni: dni,
                 role: role,
                 password: password,
-                _id:idUsuario
+                _id: idUsuario
             },
         });
 
@@ -400,11 +403,11 @@ exports.postEliminarUsuario = (req, res, next) => {
 
     const idUsuario = req.body.idUsuario;
 
+    if (req.usuario.role !== 'admin') {
+        return res.redirect('/');
+    }
     Usuario.findByIdAndDelete(idUsuario)
         .then((result) => {
-            if (req.usuario.role !== 'admin') {
-                return res.redirect('/');
-            }
             console.log('Usuario eliminado');
             res.redirect('/admin/usuarios');
         }).catch((err) => {
@@ -460,7 +463,6 @@ exports.postEditarPedido = (req, res, next) => {
     const idPedido = req.body.idPedido;
     const estado = req.body.estado;
     const fechaEntrega = req.body.fechaEntrega;
-    const precioTotal = req.body.precioTotal;
 
     Pedido.findById(idPedido)
         .then((pedido) => {
