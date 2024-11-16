@@ -1,6 +1,6 @@
 const Producto = require('../models/producto');
 const Pedido = require('../models/pedido');
-const { populate } = require('../models/usuario');
+const Usuario = require('../models/usuario');
 
 exports.getProductos = (req, res, next) => {
 
@@ -263,7 +263,7 @@ exports.getMisPedidos = (req, res, next) => {
                 path: '/pedidos',
                 titulo: 'Mis pedidos',
                 pedidos: pedidos,
-                usuario: req.usuario.nombre
+                usuario: req.usuario
             })
         }).catch((err) => {
             const error = new Error(err);
@@ -326,5 +326,21 @@ exports.postCancelarPedido = (req, res) => {
             const error = new Error(err);
             error.httpStatusCode = 500;
             return next(error);
+        });
+}
+
+//Detalles de mi cuenta
+exports.getDetallesCuenta = (req, res) => {
+    Usuario.findById(req.usuario._id)
+        .then((usuario) => {
+            res.render('user/detalles-cuenta', {
+                path: '/detalles-cuenta',
+                titulo: 'Mi Cuenta',
+                usuario: usuario,
+                autenticado: req.session.autenticado
+            })
+        })
+        .catch((err) => {
+            console.log(err);
         });
 }

@@ -52,4 +52,7 @@ router.post('/crear-pedido',
     ,isAuth, tiendaController.postMisPedidos);
 router.post('/cancelar-pedido', isAuth, tiendaController.postCancelarPedido);
 
+//Detalles de mi cuenta
+router.get('/detalles-cuenta', isAuth, tiendaController.getDetallesCuenta);
+
 module.exports = router;

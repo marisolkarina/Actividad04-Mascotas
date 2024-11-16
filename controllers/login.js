@@ -78,12 +78,8 @@ exports.postLogin = (req, res,next) => {
                     req.session.usuario = usuario;
                     req.session.save((err) => {
                         if (err) console.log('Error al guardar la sesión:', err);
-
-                        if (usuario.role === 'admin') {
-                            res.redirect('/admin/productos');
-                        } else {
-                            res.redirect('/pedidos');
-                        }
+                        
+                        res.redirect('/detalles-cuenta');
                     });
                 });
         })
@@ -191,10 +187,12 @@ exports.getNuevoPassword = (req, res, next) => {
             });
         })
         .catch(err => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            next(error);
-            return res.redirect('/login');
+            if (err) {
+                const error = new Error(err);
+                error.httpStatusCode = 500;
+                return next(error);
+            }
+            res.redirect('/login');
         });
 };
 
@@ -322,9 +320,11 @@ exports.postRegistrarse = (req, res) => {
 
 exports.postSalir = (req, res, next) => {
     req.session.destroy(err => {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        next(error);
-        return res.redirect('/');
+        if (err) {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        }
+        res.redirect('/');
     })
 }

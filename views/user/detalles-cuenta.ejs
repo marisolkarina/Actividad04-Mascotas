@@ -4,6 +4,7 @@
 <body>
     <main>
         <%- include('../includes/navigation.ejs') %>
+        <%- include('../includes/acciones-usuario.ejs', {usuario: usuario}) %>
         
         <h5>Bienvenido <%= usuario.nombre %></h5>
         
