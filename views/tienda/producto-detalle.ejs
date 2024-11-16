@@ -8,7 +8,7 @@
     <div class="d-flex m-5 justify-content-center">
         <div class="card" style="width: 18rem;">
             
-            <img src="./../../<%=producto.urlImagen %>" class="card-img-top" alt="<%= producto.nombre %>">
+            <img src="/<%=producto.urlImagen %>" class="card-img-top" alt="<%= producto.nombre %>">
 
             <% if (autenticado) { %>
                 <%- include('../includes/agregar-al-carrito.ejs', {producto: producto}) %>
