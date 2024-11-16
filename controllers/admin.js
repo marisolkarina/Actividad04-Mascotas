@@ -48,7 +48,7 @@ exports.postCrearProducto = (req, res,next) => {
     const color = req.body.color;
     const imagen = req.file;
 
-    const urlImagen = '';
+    let urlImagen = '';
     if (imagen) urlImagen = imagen.path;
 
     if (!imagen) {
@@ -152,7 +152,7 @@ exports.postEditarProducto = (req, res, next) => {
     const color = req.body.color;
     const imagen = req.file;
 
-    const urlImagen = '';
+    let urlImagen = '';
     if (imagen) urlImagen = imagen.path;
 
     if (!imagen) {
