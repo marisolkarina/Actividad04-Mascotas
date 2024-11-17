@@ -96,3 +96,16 @@ exports.postEditarPublicacion = (req, res, next) => {
             console.log(err);
         });
 };
+
+exports.postEliminarPublicacion = (req, res) => {
+    const idPublicacion = req.body.idPublicacion;
+
+    Publicacion.deleteOne({_id: idPublicacion})
+        .then((result) => {
+            console.log('Producto eliminado');
+            res.redirect('/blog');
+        }).catch((err) => {
+            console.log(err);
+        });
+
+}
