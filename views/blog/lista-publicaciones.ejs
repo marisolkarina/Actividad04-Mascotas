@@ -1,0 +1,44 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/producto.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <div class="mx-4">
+        <div class="row">
+            <main class="col-11 d-flex flex-column align-items-end">
+    
+                <div class="container">
+                    <% if (publicaciones.length > 0) { %>
+                        <div class="row m-3">
+                            <% for (let publicacion of publicaciones) { %>
+                                <div class="col-md-4 mb-2">
+                                    <div class="card" style="width: 18rem;">
+                                        <h5 class="card-title text-center mt-2"><%= publicacion.titulo %></h5>
+                                        <a href="/blog/<%= publicacion._id %>">
+                                            <img src="<%=publicacion.urlImagen %>" class="card-img-top" alt="<%= publicacion.titulo %>">
+                                        </a>
+                                        <div class="card-body">
+
+                                            <input type="hidden" name="idPublicacion" value="<%= publicacion._id %>">
+                                            
+                                            <h5 class="card-title text-center mt-2">Publicado el <%= publicacion.fechaPublicacion %></h5>
+                                            <h5 class="card-title text-center mt-2"><%= publicacion.descripcion %></h5>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>               
+                        </div>
+                    <% } else { %>
+                        <h1>No hay publicaciones</h1>
+                    <% } %>
+    
+                </div>    
+        
+            </main>
+        </div>
+    </div>
+     
+<%- include('../includes/end.ejs') %>

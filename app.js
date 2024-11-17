@@ -18,6 +18,7 @@ const adminRoutes = require('./routes/admin');
 const tiendaRoutes = require('./routes/tienda');
 const errorController = require('./controllers/error');
 const loginRoutes = require('./routes/login');
+const blogRoutes = require('./routes/blog');
 
 
 const app = express();
@@ -96,7 +97,7 @@ app.use((req, res, next) => {
 app.use(loginRoutes);
 app.use('/admin', adminRoutes);
 app.use(tiendaRoutes);
-
+app.use(blogRoutes);
 app.get('/500',errorController.get500);
 app.use(errorController.get404);
 
