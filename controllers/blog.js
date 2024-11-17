@@ -107,5 +107,40 @@ exports.postEliminarPublicacion = (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
+}
+
+exports.getPublicacion = (req, res) => {
+    const idPublicacion = req.params.idPublicacion;
+
+    Publicacion.findById(idPublicacion)
+        .then((publicacion) => {
+            res.render('blog/publicacion-detalle', {
+                publicacion: publicacion,
+                titulo: 'Publicacion', 
+                path: '/blog',
+                autenticado: req.session.autenticado,
+                comentarios: publicacion.comentarios,
+                usuario: req.usuario
+            });
+        }).catch((err) => {
+            console.log(err);
+        });
+}
+
+exports.postComentar = (req, res) => {
+    const contenido = req.body.comentario;
+    const usuario = req.usuario;
+    const idPublicacion = req.body.idPublicacion;
+
+    Publicacion.findById(idPublicacion)
+        .then((publicacion) => {
+            return publicacion.agregarComentario(contenido, usuario);
+        })
+        .then((result) => {
+            res.redirect(`/blog/${idPublicacion}`);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 
 }

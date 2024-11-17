@@ -23,7 +23,7 @@
                             <div class="card-body">
                                 <h5 class="text-center mt-2"><%= publicacion.titulo %></h5>
                                 <input type="hidden" name="idPublicacion" value="<%= publicacion._id %>">
-                                <p class="card-title text-center mt-2">Publicado el <%= publicacion.fechaPublicacion %></p>
+                                <p class="card-title text-center mt-2">Publicado el <%= new Date(publicacion.fechaPublicacion).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) %></p>
                                 <p>Autor: <%= publicacion.autor.nombre %></p>
                                 <p class= mt-2"><%= publicacion.descripcion %></p>
                             </div>

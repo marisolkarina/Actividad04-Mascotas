@@ -50,4 +50,23 @@ const publicacionSchema = new Schema({
     ]
 });
 
+publicacionSchema.methods.agregarComentario = function(contenido, usuario) {
+    if (!this.comentarios) {
+        this.comentarios = [];
+    }
+    const comentariosActualizados = [...this.comentarios];
+
+    comentariosActualizados.push({
+        contenido: contenido,
+        usuario: {
+            nombre: usuario.nombre,
+            idUsuario: usuario._id
+        },
+        fechaComentario: new Date()
+    })
+
+    this.comentarios = comentariosActualizados;
+    return this.save();
+};
+
 module.exports = mongoose.model('Publicacion', publicacionSchema);
