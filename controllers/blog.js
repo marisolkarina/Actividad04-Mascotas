@@ -10,7 +10,8 @@ exports.getPublicaciones = (req, res) => {
                 publicaciones: publicaciones,
                 titulo: "Blog", 
                 path: "/blog",
-                autenticado: req.session.autenticado
+                autenticado: req.session.autenticado,
+                usuario: req.usuario
             });
         }).catch((err) => {
             console.log(err);
@@ -46,6 +47,49 @@ exports.postCrearPublicacion = (req, res) => {
         .save()
         .then((result) => {
             console.log('Publicacion creada');
+            res.redirect('/blog');
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};
+
+exports.getEditarPublicacion = (req, res) => {
+    const idPublicacion = req.params.idPublicacion;
+
+    Publicacion.findById(idPublicacion)
+        .then((publicacion) => {
+            
+            res.render('blog/crear-editar-publicacion', {
+                titulo: 'Editar Producto',
+                path: '/editar-publicacion',
+                publicacion: publicacion,
+                modoEdicion: true,
+                autenticado: req.session.autenticado
+            })
+        }).catch((err) => {
+            console.log(err);
+        });
+}
+
+exports.postEditarPublicacion = (req, res, next) => {
+    const idPublicacion = req.body.idPublicacion;
+    const titulo = req.body.titulo;
+    const urlImagen = req.body.urlImagen;
+    const descripcion = req.body.descripcion;
+
+    Publicacion.findById(idPublicacion)
+        .then((publicacion) => {
+
+            // en la vista esta la condicion para editar si es admin o autor de la publicacion
+            publicacion.titulo = titulo;
+            publicacion.urlImagen = urlImagen;
+            publicacion.descripcion = descripcion;
+            
+            return publicacion.save();
+
+        })
+        .then((result) => {
             res.redirect('/blog');
         })
         .catch((err) => {
