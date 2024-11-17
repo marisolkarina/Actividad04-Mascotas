@@ -1,13 +1,16 @@
-const Producto = require('../models/producto');
-const Pedido = require('../models/pedido');
-const Usuario = require('../models/usuario');
 const Publicacion = require('../models/publicacion');
 
 exports.getPublicaciones = (req, res) => {
     Publicacion.find()
         .then((publicaciones) => {
+            const publicacionesCortas = publicaciones.map(publicacion => {
+                return {
+                    ...publicacion._doc,
+                    descripcionCorta: publicacion.descripcion.length>70 ? publicacion.descripcion.substring(0,70) + "..." : publicacion.descripcion
+                }
+            })
             res.render('blog/lista-publicaciones', {
-                publicaciones: publicaciones,
+                publicaciones: publicacionesCortas,
                 titulo: "Blog", 
                 path: "/blog",
                 autenticado: req.session.autenticado,

@@ -25,8 +25,10 @@
                                 <input type="hidden" name="idPublicacion" value="<%= publicacion._id %>">
                                 <p class="card-title text-center mt-2">Publicado el <%= new Date(publicacion.fechaPublicacion).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) %></p>
                                 <p>Autor: <%= publicacion.autor.nombre %></p>
-                                <p class= mt-2"><%= publicacion.descripcion %></p>
+                                <p class= mt-2"><%= publicacion.descripcionCorta %></p>
                             </div>
+
+                            <a href="/blog/<%= publicacion._id %>" class="text-center mb-3 text-decoration-none">Seguir leyendo</a>
                             
                             <% if (autenticado && (publicacion.autor.idUsuario.toString() === usuario._id.toString() || usuario.role === 'admin')) { %>
                                 <div class="d-flex justify-content-between">
