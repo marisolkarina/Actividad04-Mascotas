@@ -145,5 +145,23 @@ exports.postComentar = (req, res) => {
         .catch((err) => {
             console.log(err);
         });
+}
+
+exports.postEliminarComentario = (req, res, next) => {
+    const idPublicacion = req.body.idPublicacion;
+    const idUsuario = req.usuario._id;
+    const fechaComentario = req.body.fechaComentario;
+    const role = req.usuario.role;
+    Publicacion.findById(idPublicacion)
+        .then((publicacion) => {
+            
+            return publicacion.deleteComentario(idUsuario, fechaComentario, role);
+        })
+        .then((result) => {
+            res.redirect(`/blog/${idPublicacion}`);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 
 }

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const usuario = require('./usuario');
 
 const Schema = mongoose.Schema;
 
@@ -63,6 +64,23 @@ publicacionSchema.methods.agregarComentario = function(contenido, usuario) {
             idUsuario: usuario._id
         },
         fechaComentario: new Date()
+    })
+
+    this.comentarios = comentariosActualizados;
+    return this.save();
+};
+
+publicacionSchema.methods.deleteComentario = function(idUsuario, fechaComentario, role) {
+
+    const comentariosActualizados = this.comentarios.filter(comentario => {
+        if(role==='admin'){
+            return comentario.fechaComentario.toString() !== fechaComentario.toString();
+        }
+        return (
+            (comentario.usuario.idUsuario.toString() !== idUsuario.toString()) 
+            || 
+            (comentario.usuario.idUsuario.toString() === idUsuario.toString() && comentario.fechaComentario.toString() !== fechaComentario.toString())
+        );
     })
 
     this.comentarios = comentariosActualizados;
