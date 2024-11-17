@@ -4,41 +4,40 @@
 </head>
 <body>
     <%- include('../includes/navigation.ejs') %>
-
-    <div class="mx-4">
-        <div class="row">
-            <main class="col-11 d-flex flex-column align-items-end">
-    
-                <div class="container">
-                    <% if (publicaciones.length > 0) { %>
-                        <div class="row m-3">
-                            <% for (let publicacion of publicaciones) { %>
-                                <div class="col-md-4 mb-2">
-                                    <div class="card" style="width: 18rem;">
-                                        <h5 class="card-title text-center mt-2"><%= publicacion.titulo %></h5>
-                                        <a href="/blog/<%= publicacion._id %>">
-                                            <img src="<%=publicacion.urlImagen %>" class="card-img-top" alt="<%= publicacion.titulo %>">
-                                        </a>
-                                        <div class="card-body">
-
-                                            <input type="hidden" name="idPublicacion" value="<%= publicacion._id %>">
-                                            
-                                            <h5 class="card-title text-center mt-2">Publicado el <%= publicacion.fechaPublicacion %></h5>
-                                            <h5 class="card-title text-center mt-2"><%= publicacion.descripcion %></h5>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
-                            <% } %>               
-                        </div>
-                    <% } else { %>
-                        <h1>No hay publicaciones</h1>
-                    <% } %>
-    
-                </div>    
+    <main>
+        <h1 class="text-center bg-dark p-3 text-white">Blog</h1>
+        <div class="container">
+            <% if (autenticado) { %>
+                <a href="/crear-publicacion" class="btn btn-verde w-25 my-4">Crear Publicacion</a>
+            <% } %>
         
-            </main>
+        <% if (publicaciones.length > 0) { %>
+            <div class="row m-3">
+                <% for (let publicacion of publicaciones) { %>
+                    <div class="col-6 mb-2">
+                        <div class="card">
+                            
+                            <a href="/blog/<%= publicacion._id %>">
+                                <img src="<%=publicacion.urlImagen %>" class="card-img-top" alt="<%= publicacion.titulo %>">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="text-center mt-2"><%= publicacion.titulo %></h5>
+                                <input type="hidden" name="idPublicacion" value="<%= publicacion._id %>">
+                                <p class="card-title text-center mt-2">Publicado el <%= publicacion.fechaPublicacion %></p>
+                                <p>Autor: <%= publicacion.autor.nombre %></p>
+                                <p class= mt-2"><%= publicacion.descripcion %></p>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    
+                <% } %>               
+            </div>
+        <% } else { %>
+            <h1>No hay publicaciones</h1>
+        <% } %>
         </div>
-    </div>
-     
+    </main>
+    
 <%- include('../includes/end.ejs') %>

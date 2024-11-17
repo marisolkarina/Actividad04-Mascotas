@@ -28,6 +28,7 @@ const publicacionSchema = new Schema({
     },
     fechaPublicacion: {
         type: Date,
+        default: Date.now,
         required: true
     },
     comentarios: [
@@ -43,7 +44,8 @@ const publicacionSchema = new Schema({
                     required: true,
                     ref: 'Usuario'
                 } 
-            }
+            },
+            fechaComentario: { type: Date, default: Date.now }
         }
     ]
 });
