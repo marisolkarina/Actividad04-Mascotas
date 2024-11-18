@@ -41,40 +41,49 @@ exports.getIndex = (req, res, next) => {
 
 }
 
-exports.getProductosPorCategoria = (categoria) => {
+exports.getProductosPorCategoria = (req, res) => {
 
-    return (req, res) => {
-
-        Producto.find()
-            .then((productosObtenidos) => {
-                const productosFiltrados = productosObtenidos.filter(producto =>
-                    producto.categoria.toLowerCase() === categoria.toLowerCase()
-                );
-
-                res.render('tienda/lista-productos', {
-                    prods: productosFiltrados,
-                    titulo: `${categoria}`,
-                    path: `/productos/${categoria}`,
-                    autenticado: req.session.autenticado
-                })
-            }).catch((err) => {
-                const error = new Error(err);
-                error.httpStatusCode = 500;
-                return next(error);
-            });
-    }
-}
-
-//ordenar productos de menor a mayor precio
-exports.getProductosMenorMayor = (req, res, next) => {
+    const categoria = req.params.categoria;
 
     Producto.find()
         .then((productosObtenidos) => {
-            const productosOrdenados = productosObtenidos.sort((prod1, prod2) => prod1.precio - prod2.precio);
+            const productosFiltrados = productosObtenidos.filter(producto =>
+                producto.categoria.toLowerCase() === categoria.toLowerCase()
+            );
+
+            res.render('tienda/lista-productos', {
+                prods: productosFiltrados,
+                titulo: `${categoria}`,
+                path: `/productos/${categoria}`,
+                autenticado: req.session.autenticado
+            })
+        }).catch((err) => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
+    
+}
+
+// Ordenar productos por precio o alfabeticamente
+exports.getProductosOrdenados = (req, res, next) => {
+    let orden = req.params.orden;
+
+    Producto.find()
+        .then((productosObtenidos) => {
+            let productosOrdenados;
+            if(orden === 'menor-a-mayor') {
+                productosOrdenados = productosObtenidos.sort((prod1, prod2) => prod1.precio - prod2.precio);
+            } else if (orden === 'mayor-a-menor') {
+                productosOrdenados = productosObtenidos.sort((prod1, prod2) => prod2.precio - prod1.precio);
+            } else { // orden === 'alfabeticamente'
+                productosOrdenados = productosObtenidos.sort((prod1, prod2) => prod1.nombre.localeCompare(prod2.nombre));
+            }
+            
             res.render('tienda/lista-productos', {
                 prods: productosOrdenados,
                 titulo: "Productos ordenados",
-                path: "/productos/ordenar/menor-a-mayor",
+                path: `/productos/ordenar/${orden}`,
                 autenticado: req.session.autenticado
 
             });
@@ -85,66 +94,31 @@ exports.getProductosMenorMayor = (req, res, next) => {
         });
 
 }
-//ordenar productos de mayor a menor precio
-exports.getProductosMayorMenor = (req, res, next) => {
 
-    Producto.find()
-        .then((productosObtenidos) => {
-            const productosOrdenados = productosObtenidos.sort((prod1, prod2) => prod2.precio - prod1.precio);
-            res.render('tienda/lista-productos', {
-                prods: productosOrdenados,
-                titulo: "Productos ordenados",
-                path: "/productos/ordenar/mayor-a-menor",
-                autenticado: req.session.autenticado
-            });
-        }).catch((err) => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return next(error);
-        });
-
-}
-//ordenar productos alfabeticamente
-exports.getProductosAlfabeticamente = (req, res, next) => {
-    Producto.find()
-        .then((productosObtenidos) => {
-            const productosOrdenados = productosObtenidos.sort((prod1, prod2) => prod1.nombre.localeCompare(prod2.nombre));
-
-            res.render('tienda/lista-productos', {
-                prods: productosOrdenados,
-                titulo: "Productos ordenados",
-                path: "/productos/ordenar/alfabeticamente",
-                autenticado: req.session.autenticado
-            });
-        }).catch((err) => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return next(error);
-        });
-
-}
 
 // filtrar productos por color
-exports.getProductosPorColor = (color) => {
-    return (req, res) => {
-        Producto.find()
-            .then((productosObtenidos) => {
-                const productosFiltrados = productosObtenidos.filter(producto =>
-                    producto.color.toLowerCase() === color.toLowerCase()
-                );
+exports.getProductosPorColor = (req, res) => {
+    
+    const color = req.params.nombreColor;
+    
+    Producto.find()
+        .then((productosObtenidos) => {
+            const productosFiltrados = productosObtenidos.filter(producto =>
+                producto.color.toLowerCase() === color.toLowerCase()
+            );
 
-                res.render('tienda/lista-productos', {
-                    prods: productosFiltrados,
-                    titulo: `${color}`,
-                    path: `/productos/${color}`,
-                    autenticado: req.session.autenticado
-                })
-            }).catch((err) => {
-                const error = new Error(err);
-                error.httpStatusCode = 500;
-                return next(error);
-            });
-    }
+            res.render('tienda/lista-productos', {
+                prods: productosFiltrados,
+                titulo: `${color}`,
+                path: `/productos/:${color}`,
+                autenticado: req.session.autenticado
+            })
+        }).catch((err) => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
+    
 }
 
 //ver detalle de un producto
