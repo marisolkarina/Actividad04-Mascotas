@@ -10,15 +10,17 @@ router.get('/', tiendaController.getIndex);
 router.get('/productos', tiendaController.getProductos);
 router.post('/productos', tiendaController.postProductoPalabra);
 
-//filtros por categoria
+//filtrar por categoria
 router.get('/productos/:categoria', tiendaController.getProductosPorCategoria);
 
-//ordenar por precio o alfabeticamente
-router.get('/productos/ordenar/:orden', tiendaController.getProductosOrdenados);
-
+//filtrar por precio
+router.post('/productos/filtrados-por-precio', tiendaController.postProductosPorPrecio);
 
 //filtrar por color
 router.get('/productos/:nombreColor', tiendaController.getProductosPorColor);
+
+//ordenar por precio o alfabeticamente
+router.get('/productos/ordenar/:orden', tiendaController.getProductosOrdenados);
 
 //ver detalle de producto
 router.get('/productos/:idProducto', tiendaController.getProducto);

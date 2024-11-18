@@ -6,6 +6,16 @@
     <li><a class="list-group-item list-group-item-action" href="/productos/hamster">Hamster</a></li>
 </ul>
 
+<h5>Filtrar por precio</h5>
+<form action="/productos/filtrados-por-precio" method="POST"> 
+    <label for="min">Mín</label>
+    <input type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="min">
+    <label for="max">Max</label>
+    <input type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="max">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button class="btn btn-verde">Filtrar</button>
+</form>
+
 <h5>Filtrar por color</h5>
 <ul class="list-unstyled list-group">
     <li><a class="list-group-item list-group-item-action" href="/productos/rojo">Rojo</a></li>

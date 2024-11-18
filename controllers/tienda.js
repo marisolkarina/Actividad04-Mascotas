@@ -65,6 +65,35 @@ exports.getProductosPorCategoria = (req, res) => {
     
 }
 
+exports.postProductosPorPrecio = (req, res) => {
+    const precioMin = Number(req.body.min);
+    const precioMax = Number(req.body.max);
+    
+    Producto.find()
+        .then((productosObtenidos) => {
+            let productosFiltrados;
+            if(precioMin === 0) {
+                productosFiltrados = productosObtenidos.filter(producto => producto.precio <= precioMax );
+            } else if (precioMax === 0) {
+                productosFiltrados = productosObtenidos.filter(producto => producto.precio >= precioMin );
+            } else {
+                productosFiltrados = productosObtenidos.filter(producto => producto.precio >= precioMin && producto.precio <= precioMax );
+            }
+
+            res.render('tienda/lista-productos', {
+                prods: productosFiltrados,
+                titulo: 'Productos segun precio',
+                path: '/productos/filtrados-por-precio',
+                autenticado: req.session.autenticado
+            })
+        }).catch((err) => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
+}
+
+
 // Ordenar productos por precio o alfabeticamente
 exports.getProductosOrdenados = (req, res, next) => {
     let orden = req.params.orden;
