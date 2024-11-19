@@ -41,11 +41,12 @@ exports.getCrearProducto = (req, res,next) => {
     })
 };
 
-exports.postCrearProducto = (req, res,next) => { 
-
+exports.postCrearProducto = (req, res,next) => {
+    const idProducto = req.body.idProducto;
     const nombre = req.body.nombre;
     const precio = Number(req.body.precio);
-    const descuento = Number(req.body.descuento); //en x% 
+    const descuento = Number(req.body.descuento);
+    const fechaExpiracion = req.body.fechaExpiracion;
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
@@ -66,9 +67,13 @@ exports.postCrearProducto = (req, res,next) => {
                 nombre: nombre,
                 descripcion: descripcion,
                 precio: precio,
-                descuento: descuento,
+                descuento: {
+                    valor: descuento,
+                    fechaExpiracion: fechaExpiracion
+                },
                 categoria: categoria,
                 color: color,
+                _id: idProducto
             },
         });
 
@@ -89,20 +94,27 @@ exports.postCrearProducto = (req, res,next) => {
                 nombre: nombre,
                 descripcion: descripcion,
                 precio: precio,
-                descuento: descuento,
+                descuento: {
+                    valor: descuento,
+                    fechaExpiracion: fechaExpiracion
+                },
                 categoria: categoria,
                 color: color,
-                idUsuario: req.usuario._id
+                idUsuario: req.usuario._id,
+                _id: idProducto
             },
         });
-    }
+      }
 
     const producto = new Producto({
         nombre: nombre,
         urlImagen: urlImagen,
         descripcion: descripcion,
         precio: precio,
-        descuento: descuento,
+        descuento: {
+            valor: descuento,
+            fechaExpiracion: fechaExpiracion
+        },
         categoria: categoria,
         color: color,
         idUsuario: req.usuario._id
@@ -130,6 +142,7 @@ exports.getEditarProducto = (req, res,next) => {
 
     Producto.findById(idProducto)
         .then((producto) => {
+            // console.log(producto._id)
             
             res.render('admin/crear-editar-producto', {
                 titulo: 'Editar Producto',
@@ -154,6 +167,7 @@ exports.postEditarProducto = (req, res, next) => {
     const nombre = req.body.nombre;
     const precio = Number(req.body.precio);
     const descuento = Number(req.body.descuento);
+    const fechaExpiracion = req.body.fechaExpiracion;
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
@@ -171,9 +185,13 @@ exports.postEditarProducto = (req, res, next) => {
                 nombre: nombre,
                 descripcion: descripcion,
                 precio: precio,
-                descuento: descuento,
+                descuento: {
+                    valor: descuento,
+                    fechaExpiracion: fechaExpiracion
+                },
                 categoria: categoria,
                 color: color,
+                _id: idProducto
             },
         });
     }
@@ -193,7 +211,10 @@ exports.postEditarProducto = (req, res, next) => {
                 nombre: nombre,
                 descripcion: descripcion,
                 precio: precio,
-                descuento: descuento,
+                descuento: {
+                    valor: descuento,
+                    fechaExpiracion: fechaExpiracion
+                },
                 categoria: categoria,
                 color: color,
                 _id: idProducto
@@ -213,8 +234,9 @@ exports.postEditarProducto = (req, res, next) => {
             }
             producto.descripcion = descripcion;
             producto.precio = precio;
+            producto.descuento.valor = descuento;
+            producto.descuento.fechaExpiracion = fechaExpiracion;
             producto.categoria = categoria;
-            producto.descuento = descuento;
             producto.color = color;
             return producto.save();
         })

@@ -17,7 +17,11 @@
         </div>
         <div class="mx-3">
             <h5 class="card-title text-center mt-2"><%= producto.nombre %></h5>
-            <h5 class="card-title text-center mt-2">S/. <%= producto.precio %></h5>
+            <h5 class="card-title text-center mt-2 <%= (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) ? 'text-decoration-line-through' : '' %>"><%= producto.precio.toFixed(2) %></h5>
+            <% if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) { %>
+                <h5 class="card-title text-center mt-2"><%= producto.precio - (producto.precio*producto.descuento.valor)/100 %></h5>
+                <p>Descuento disponible hasta: <%= producto.descuento.fechaExpiracion %></p>
+            <% } %>
             
             <h5>Descripción</h5>
             <p class="text-center mt-2"><%= producto.descripcion %></p>

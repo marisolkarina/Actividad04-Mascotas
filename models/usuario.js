@@ -59,9 +59,8 @@ usuarioSchema.methods.agregarAlCarrito = function(producto, cantidadInput) {
             cantidad: nuevaCantidad
         });
     }
-
     let precioProd = Number(producto.precio);
-    if (producto.descuento !== 0) precioProd = producto.precio - (producto.precio*producto.descuento)/100;
+    if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) precioProd = producto.precio - (producto.precio*producto.descuento.valor)/100;
     
     const total = this.carrito.precioTotal + precioProd*Number(cantidadInput);
     const carritoActualizado = {
@@ -80,7 +79,7 @@ usuarioSchema.methods.deleteItemDelCarrito = function(idProducto, producto) {
     const cantidadProducto = productoEliminar.cantidad;
 
     let precioProd = Number(producto.precio);
-    if (producto.descuento !== 0) precioProd = producto.precio - (producto.precio*producto.descuento)/100;
+    if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) precioProd = producto.precio - (producto.precio*producto.descuento.valor)/100;
     this.carrito.precioTotal = this.carrito.precioTotal - precioProd*cantidadProducto;
 
     const itemsActualizados = this.carrito.items.filter(item => {
@@ -103,7 +102,7 @@ usuarioSchema.methods.actualizarCantidadProducto = function (idProducto, nuevaCa
     productoEditar.cantidad = nuevaCantidad;
     
     let precioProd = Number(producto.precio);
-    if (producto.descuento !== 0) precioProd = producto.precio - (producto.precio*producto.descuento)/100;
+    if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) precioProd = producto.precio - (producto.precio*producto.descuento.valor)/100;
     // Actualizar el precio total
     this.carrito.precioTotal = this.carrito.precioTotal - (precioProd * cantidadAnterior) + (precioProd * nuevaCantidad);
     

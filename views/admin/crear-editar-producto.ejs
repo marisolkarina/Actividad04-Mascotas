@@ -44,11 +44,20 @@
 
                     <!-- Campo Descuento -->
                     <div class="mb-3">
-                        <label for="precio" class="form-label">Descuento (en %)</label>
+                        <label for="descuento" class="form-label">Descuento (en %)</label>
                         <input
-                            class="form-control <%= validationErrors.find(e => e.path === 'precio') ? 'border-danger' : '' %>"
+                            class="form-control"
                             type="number" name="descuento" id="descuento" step="0.01"
-                            value="<% if (modoEdicion || tieneError) { %><%= producto.descuento %><% } %>">
+                            value="<% if (modoEdicion || tieneError) { %><%= producto.descuento.valor %><% } %>">
+                    </div>
+
+                    <!-- Campo Descuento -->
+                    <div class="mb-3">
+                        <label for="fechaExpiracion" class="form-label">Fecha de expiracion descuento</label>
+                        <input
+                            class="form-control"
+                            type="datetime-local" name="fechaExpiracion" id="fechaExpiracion"
+                            value="<% if (modoEdicion || tieneError) { %><%= producto.descuento.fechaExpiracion %><% } %>">
                     </div>
 
                     <!-- Campo Categoria -->
@@ -91,13 +100,12 @@
                     <!-- Campo oculto para el ID si está en modo edición -->
                     <% if (modoEdicion) { %>
                         <input type="hidden" value="<%= producto._id %>" name="idProducto">
-                        <% } %>
+                    <% } %>
 
                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                             <!-- Botón de Envío -->
                             <button class="btn btn-primary" type="submit">
-                                <% if (modoEdicion) { %>Actualizar Producto<% } else { %>Crear Producto<% }
-                                            %>
+                                <% if (modoEdicion) { %>Actualizar Producto<% } else { %>Crear Producto<% } %>
                             </button>
                 </form>
             </main>

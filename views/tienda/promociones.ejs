@@ -17,7 +17,8 @@
                             <% for (let producto of prods) { %>
                                 <div class="col-md-4 mb-2">
                                     <div class="card" style="width: 18rem;">
-                                        <h5 class="card-title text-center mt-2 bg-warning-subtle">Descuento: <%= - producto.descuento %> %</h5>
+                                        <h5 class="card-title text-center mt-2 bg-warning-subtle">Descuento: <%= - producto.descuento.valor %> %</h5>
+                                        <p>Disponible hasta: <%= producto.descuento.fechaExpiracion %></p>
                                         
                                         <a href="/productos/<%= producto._id %>">
                                             <img src="/<%=producto.urlImagen %>" class="card-img-top" alt="<%= producto.nombre %>">
@@ -31,7 +32,7 @@
 
                                             <h5 class="card-title text-center mt-2 <%= producto.descuento !== 0 ? 'text-decoration-line-through' : '' %>">S/. <%= producto.precio.toFixed(2) %></h5>
                                             
-                                            <h5 class="card-title text-center mt-2">S/. <%= producto.precio - (producto.precio*producto.descuento)/100 %></h5>
+                                            <h5 class="card-title text-center mt-2">S/. <%= producto.precio - (producto.precio*producto.descuento.valor)/100 %></h5>
                                             
                                             <% if (autenticado) { %>
                                                 <%- include('../includes/agregar-al-carrito.ejs', {producto: producto}) %>

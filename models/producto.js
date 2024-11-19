@@ -20,8 +20,16 @@ const productoSchema = new Schema({
         required: true
     },
     descuento: {
-        type: Number,
-        required: false
+        valor: {
+            type: Number,
+            required: false,
+            default: 0
+        },
+        fechaExpiracion : {
+            type: Date,
+            required: false
+        }
+        
     },
     categoria: {
         type: String,

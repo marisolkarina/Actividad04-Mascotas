@@ -48,12 +48,17 @@
                                         </form>
                                          
                                     </td>
-                                    
-                                    <!-- Precio unitario con/sin descuento-->
-                                    <td>S/. <%= item.idProducto.precio - (item.idProducto.precio*item.idProducto.descuento)/100 %></td>
-                                    <!-- Subtotal con/sin descuento-->
-                                    <td>S/. <%= ((item.idProducto.precio - (item.idProducto.precio*item.idProducto.descuento)/100)*item.cantidad).toFixed(2) %></td>
-
+                                    <% if (item.idProducto.descuento.valor !== 0 && item.idProducto.descuento.fechaExpiracion > new Date()) { %>
+                                        <!-- Precio unitario con descuento-->
+                                        <td>S/. <%= item.idProducto.precio - (item.idProducto.precio*item.idProducto.descuento.valor)/100 %></td>
+                                        <!-- Subtotal con descuento-->
+                                        <td>S/. <%= ((item.idProducto.precio - (item.idProducto.precio*item.idProducto.descuento.valor)/100)*item.cantidad).toFixed(2) %></td>
+                                    <% } else { %>
+                                        <!-- Precio unitario sin descuento-->
+                                        <td>S/. <%= item.idProducto.precio %></td>
+                                        <!-- Subtotal sin descuento-->
+                                        <td>S/. <%= (item.idProducto.precio*item.cantidad).toFixed(2) %></td>
+                                    <% } %>
                                     <td>
                                         <form action="/eliminar-producto" method="POST">
                                             <input type="hidden" name="idProducto" value="<%= item.idProducto._id %>">
