@@ -18,6 +18,10 @@
                             <img src="/<%= producto.urlImagen %>" class="card-img-top" alt="<%= producto.nombre %>">
                             <h5 class="card-title text-center mt-2"><%= producto.nombre %></h5>
                             <h5 class="card-title text-center mt-2"><%= producto.precio.toFixed(2) %></h5>
+                            <% if (producto.descuento !== 0) { %>
+                                <p class="card-title text-center mt-2">Descuento: - <%= producto.descuento %> % </p>
+                                <h5 class="card-title text-center mt-2"><%= producto.precio - (producto.precio*producto.descuento)/100 %></h5>
+                            <% } %>
                         </div>
                         <div class="col-6">
                             <h5 class="text-center">Descripcion</h5>

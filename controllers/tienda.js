@@ -336,8 +336,29 @@ exports.postCancelarPedido = (req, res) => {
         });
 }
 
+//Promociones
+exports.getPromociones = (req, res, next) => {
+    Producto.find()
+        .then((productosObtenidos) => {
+            const productosConDescuento = productosObtenidos.filter(producto =>
+                producto.descuento !== 0
+            );
+
+            res.render('tienda/promociones', {
+                prods: productosConDescuento,
+                titulo: 'Promociones',
+                path: '/promociones',
+                autenticado: req.session.autenticado
+            })
+        }).catch((err) => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
+}
+
 //Detalles de mi cuenta
-exports.getDetallesCuenta = (req, res) => {
+exports.getDetallesCuenta = (req, res, next) => {
     Usuario.findById(req.usuario._id)
         .then((usuario) => {
             res.render('user/detalles-cuenta', {
@@ -348,7 +369,9 @@ exports.getDetallesCuenta = (req, res) => {
             })
         })
         .catch((err) => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 }
 

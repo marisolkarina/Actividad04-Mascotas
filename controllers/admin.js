@@ -41,10 +41,11 @@ exports.getCrearProducto = (req, res,next) => {
     })
 };
 
-exports.postCrearProducto = (req, res,next) => {
+exports.postCrearProducto = (req, res,next) => { 
 
     const nombre = req.body.nombre;
-    const precio = parseFloat(req.body.precio);
+    const precio = Number(req.body.precio);
+    const descuento = Number(req.body.descuento); //en x% 
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
@@ -65,6 +66,7 @@ exports.postCrearProducto = (req, res,next) => {
                 nombre: nombre,
                 descripcion: descripcion,
                 precio: precio,
+                descuento: descuento,
                 categoria: categoria,
                 color: color,
             },
@@ -87,18 +89,20 @@ exports.postCrearProducto = (req, res,next) => {
                 nombre: nombre,
                 descripcion: descripcion,
                 precio: precio,
+                descuento: descuento,
                 categoria: categoria,
                 color: color,
                 idUsuario: req.usuario._id
             },
         });
-      }
+    }
 
     const producto = new Producto({
         nombre: nombre,
         urlImagen: urlImagen,
         descripcion: descripcion,
         precio: precio,
+        descuento: descuento,
         categoria: categoria,
         color: color,
         idUsuario: req.usuario._id
@@ -148,7 +152,8 @@ exports.getEditarProducto = (req, res,next) => {
 exports.postEditarProducto = (req, res, next) => {
     const idProducto = req.body.idProducto;
     const nombre = req.body.nombre;
-    const precio = parseFloat(req.body.precio);
+    const precio = Number(req.body.precio);
+    const descuento = Number(req.body.descuento);
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
@@ -166,6 +171,7 @@ exports.postEditarProducto = (req, res, next) => {
                 nombre: nombre,
                 descripcion: descripcion,
                 precio: precio,
+                descuento: descuento,
                 categoria: categoria,
                 color: color,
             },
@@ -187,6 +193,7 @@ exports.postEditarProducto = (req, res, next) => {
                 nombre: nombre,
                 descripcion: descripcion,
                 precio: precio,
+                descuento: descuento,
                 categoria: categoria,
                 color: color,
                 _id: idProducto
@@ -207,6 +214,7 @@ exports.postEditarProducto = (req, res, next) => {
             producto.descripcion = descripcion;
             producto.precio = precio;
             producto.categoria = categoria;
+            producto.descuento = descuento;
             producto.color = color;
             return producto.save();
         })

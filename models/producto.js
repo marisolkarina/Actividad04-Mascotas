@@ -19,6 +19,10 @@ const productoSchema = new Schema({
         type: Number,
         required: true
     },
+    descuento: {
+        type: Number,
+        required: false
+    },
     categoria: {
         type: String,
         required: true

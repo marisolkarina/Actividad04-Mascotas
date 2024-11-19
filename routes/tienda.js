@@ -50,6 +50,9 @@ router.post('/cancelar-pedido', isAuth, tiendaController.postCancelarPedido);
 
 router.get('/pedidos/:idPedido', isAuth, tiendaController.getComprobante);
 
+// Promociones (productos con descuentos)
+router.get('/promociones', tiendaController.getPromociones);
+
 //Detalles de mi cuenta
 router.get('/detalles-cuenta', isAuth, tiendaController.getDetallesCuenta);
 

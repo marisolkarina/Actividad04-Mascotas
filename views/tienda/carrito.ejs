@@ -48,8 +48,12 @@
                                         </form>
                                          
                                     </td>
-                                    <td><%= item.idProducto.precio %></td>
-                                    <td>S/. <%= (item.idProducto.precio*item.cantidad).toFixed(2) %></td>
+                                    
+                                    <!-- Precio unitario con/sin descuento-->
+                                    <td>S/. <%= item.idProducto.precio - (item.idProducto.precio*item.idProducto.descuento)/100 %></td>
+                                    <!-- Subtotal con/sin descuento-->
+                                    <td>S/. <%= ((item.idProducto.precio - (item.idProducto.precio*item.idProducto.descuento)/100)*item.cantidad).toFixed(2) %></td>
+
                                     <td>
                                         <form action="/eliminar-producto" method="POST">
                                             <input type="hidden" name="idProducto" value="<%= item.idProducto._id %>">
