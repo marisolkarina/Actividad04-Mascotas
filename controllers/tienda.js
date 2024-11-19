@@ -404,8 +404,13 @@ exports.getComprobante = (req, res, next) => {
             });
             pdfDoc.fontSize(12).text('---------------------------------------');
             let precioTotal = 0;
+
             pedido.productos.forEach(prod => {
-                precioTotal += prod.cantidad * prod.producto.precio;
+
+                let precioProd = Number(prod.producto.precio);
+                if (prod.descuento !== 0) precioProd = precioProd - (precioProd*prod.producto.descuento)/100;
+
+                precioTotal += prod.cantidad * precioProd;
                 pdfDoc
                     .fontSize(12)
                     .text(
@@ -414,7 +419,7 @@ exports.getComprobante = (req, res, next) => {
                         prod.cantidad +
                         ' x ' +
                         'S/ ' +
-                        prod.producto.precio
+                        precioProd
                     );
             });
             pdfDoc.text('---------------------------------------');
