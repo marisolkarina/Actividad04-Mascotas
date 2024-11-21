@@ -1,7 +1,18 @@
 const Publicacion = require('../models/publicacion');
+const ITEMS_POR_PAGINA = 2;
 
 exports.getPublicaciones = (req, res) => {
+    const pagina = +req.query.pagina || 1;
+    let nroProductos;
+
     Publicacion.find()
+        .countDocuments()
+        .then((nroDocs) => {
+            nroProductos = nroDocs;
+            return Publicacion.find()
+                .skip((pagina-1) * ITEMS_POR_PAGINA)
+                .limit(ITEMS_POR_PAGINA)
+        })
         .then((publicaciones) => {
             const publicacionesCortas = publicaciones.map(publicacion => {
                 return {
@@ -14,7 +25,14 @@ exports.getPublicaciones = (req, res) => {
                 titulo: "Blog", 
                 path: "/blog",
                 autenticado: req.session.autenticado,
-                usuario: req.usuario
+                usuario: req.usuario,
+                usuario: req.usuario,
+                paginaActual: pagina,
+                tienePaginaSiguiente: ITEMS_POR_PAGINA * pagina < nroProductos,
+                tienePaginaAnterior: pagina > 1,
+                paginaSiguiente: pagina + 1,
+                paginaAnterior: pagina - 1,
+                ultimaPagina: Math.ceil(nroProductos / ITEMS_POR_PAGINA)
             });
         }).catch((err) => {
             console.log(err);
