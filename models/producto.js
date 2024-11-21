@@ -39,6 +39,10 @@ const productoSchema = new Schema({
         type: String,
         required: true
     },
+    stock: {
+        type: Number,
+        required: true
+    },
     idUsuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',

@@ -241,6 +241,10 @@ exports.postCarrito = (req, res, next) => {
 
     Producto.findById(idProducto)
         .then((producto) => {
+            if (producto.stock === 0) {
+                console.log('no hay stock')
+                return;
+            }
             return req.usuario.agregarAlCarrito(producto, cantidad);
         })
         .then((result) => {

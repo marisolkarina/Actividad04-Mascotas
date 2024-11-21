@@ -42,6 +42,15 @@
                             value="<% if (modoEdicion || tieneError) { %><%= producto.precio.toFixed(2) %><% } %>">
                     </div>
 
+                    <!-- Campo Stock -->
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input
+                            class="form-control <%= validationErrors.find(e => e.path === 'stock') ? 'border-danger' : '' %>"
+                            type="number" name="stock" id="stock" step="1"
+                            value="<% if (modoEdicion || tieneError) { %><%= producto.stock %><% } %>">
+                    </div>
+
                     <!-- Campo Descuento -->
                     <div class="mb-3">
                         <label for="descuento" class="form-label">Descuento (en %)</label>
@@ -51,7 +60,7 @@
                             value="<% if (modoEdicion || tieneError) { %><%= producto.descuento.valor %><% } %>">
                     </div>
 
-                    <!-- Campo Descuento -->
+                    <!-- Campo fecha de expiracion de descuento -->
                     <div class="mb-3">
                         <label for="fechaExpiracion" class="form-label">Fecha de expiracion descuento</label>
                         <input

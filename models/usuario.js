@@ -47,20 +47,40 @@ usuarioSchema.methods.agregarAlCarrito = function(producto, cantidadInput) {
     const indiceEnCarrito = this.carrito.items.findIndex(cp => {
         return cp.idProducto.toString() === producto._id.toString();
     });
-    let nuevaCantidad = cantidadInput;
+    let nuevaCantidad;
     const itemsActualizados = [...this.carrito.items];
   
     if (indiceEnCarrito >= 0) {
+
+        // Verificando que no se compre mas de lo disponible en el stock
+        if (cantidadInput > producto.stock) {
+            cantidadInput = producto.stock;
+        }
+
         nuevaCantidad = this.carrito.items[indiceEnCarrito].cantidad + cantidadInput;
+
+        // Actualizando la cantidad de un producto existente en el carrito
         itemsActualizados[indiceEnCarrito].cantidad = nuevaCantidad;
+
     } else {
+        // Verificando que no se compre mas de lo disponible en el stock
+        if (cantidadInput > producto.stock) {
+            cantidadInput = producto.stock;
+        }
+
+        nuevaCantidad = cantidadInput;
+
+        // Añadiendo producto nuevo al carrito
         itemsActualizados.push({
             idProducto: producto._id,
             cantidad: nuevaCantidad
         });
     }
+    
     let precioProd = Number(producto.precio);
-    if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) precioProd = producto.precio - (producto.precio*producto.descuento.valor)/100;
+    if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) {
+        precioProd = producto.precio - (producto.precio*producto.descuento.valor)/100;
+    }
     
     const total = this.carrito.precioTotal + precioProd*Number(cantidadInput);
     const carritoActualizado = {
@@ -69,27 +89,37 @@ usuarioSchema.methods.agregarAlCarrito = function(producto, cantidadInput) {
     };
   
     this.carrito = carritoActualizado;
-    return this.save();
-  };
 
-  
+    // Actualizando el stock
+    producto.stock = producto.stock - cantidadInput;
+
+    // Guardando el carrito y el producto
+    return Promise.all([this.save(), producto.save()]);
+};
+
+
 usuarioSchema.methods.deleteItemDelCarrito = function(idProducto, producto) {
 
     const productoEliminar = this.carrito.items.find(cp => cp.idProducto.toString() === idProducto.toString());
     const cantidadProducto = productoEliminar.cantidad;
 
     let precioProd = Number(producto.precio);
-    if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) precioProd = producto.precio - (producto.precio*producto.descuento.valor)/100;
+    if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) {
+        precioProd = producto.precio - (producto.precio*producto.descuento.valor)/100;
+    }
     this.carrito.precioTotal = this.carrito.precioTotal - precioProd*cantidadProducto;
 
     const itemsActualizados = this.carrito.items.filter(item => {
         return item.idProducto.toString() !== idProducto.toString();
     });
     this.carrito.items = itemsActualizados;
-    return this.save();
+
+    // Actualizando el stock
+    producto.stock = producto.stock + cantidadProducto;
+    return Promise.all([this.save(), producto.save()]);
 };
 
-usuarioSchema.methods.actualizarCantidadProducto = function (idProducto, nuevaCantidad, producto) {
+usuarioSchema.methods.actualizarCantidadProducto = function (idProducto, nuevaCantidadInput, producto) {
     if (!this.carrito) {
         this.carrito = {items: [], precioTotal: 0};
     }
@@ -97,16 +127,28 @@ usuarioSchema.methods.actualizarCantidadProducto = function (idProducto, nuevaCa
     if (!productoEditar) {
         return;
     }
-    // Actualizar la cantidad
+    
     const cantidadAnterior = productoEditar.cantidad;
-    productoEditar.cantidad = nuevaCantidad;
+
+    // Verificando que no se compre mas de lo disponible
+    // disponible: producto.stock + cantidadAnterior
+    if (nuevaCantidadInput > producto.stock + cantidadAnterior && producto.stock !== 0) {
+        nuevaCantidadInput = producto.stock + cantidadAnterior;
+    }
+
+    // Actualizar la cantidad
+    productoEditar.cantidad = nuevaCantidadInput;
     
     let precioProd = Number(producto.precio);
-    if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) precioProd = producto.precio - (producto.precio*producto.descuento.valor)/100;
+    if (producto.descuento.valor !== 0 && producto.descuento.fechaExpiracion > new Date()) {
+        precioProd = producto.precio - (producto.precio*producto.descuento.valor)/100;
+    }
     // Actualizar el precio total
-    this.carrito.precioTotal = this.carrito.precioTotal - (precioProd * cantidadAnterior) + (precioProd * nuevaCantidad);
+    this.carrito.precioTotal = this.carrito.precioTotal - (precioProd * cantidadAnterior) + (precioProd * nuevaCantidadInput);
     
-    return this.save();
+    // Actualizando el stock
+    producto.stock = producto.stock + cantidadAnterior - nuevaCantidadInput;
+    return Promise.all([this.save(), producto.save()]);
      
 }
 

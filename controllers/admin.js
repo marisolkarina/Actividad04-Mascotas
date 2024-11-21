@@ -50,6 +50,7 @@ exports.postCrearProducto = (req, res,next) => {
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
+    const stock = req.body.stock;
     const imagen = req.file;
 
     let urlImagen = '';
@@ -100,6 +101,7 @@ exports.postCrearProducto = (req, res,next) => {
                 },
                 categoria: categoria,
                 color: color,
+                stock: stock,
                 idUsuario: req.usuario._id,
                 _id: idProducto
             },
@@ -117,6 +119,7 @@ exports.postCrearProducto = (req, res,next) => {
         },
         categoria: categoria,
         color: color,
+        stock: stock,
         idUsuario: req.usuario._id
     });
 
@@ -171,6 +174,7 @@ exports.postEditarProducto = (req, res, next) => {
     const descripcion = req.body.descripcion;
     const categoria = req.body.categoria;
     const color = req.body.color;
+    const stock = parseInt(req.body.stock);
     const imagen = req.file;
 
     if (!imagen) {
@@ -191,6 +195,7 @@ exports.postEditarProducto = (req, res, next) => {
                 },
                 categoria: categoria,
                 color: color,
+                stock: stock,
                 _id: idProducto
             },
         });
@@ -217,6 +222,7 @@ exports.postEditarProducto = (req, res, next) => {
                 },
                 categoria: categoria,
                 color: color,
+                stock: stock,
                 _id: idProducto
             },
         });
@@ -238,6 +244,7 @@ exports.postEditarProducto = (req, res, next) => {
             producto.descuento.fechaExpiracion = fechaExpiracion;
             producto.categoria = categoria;
             producto.color = color;
+            producto.stock = stock;
             return producto.save();
         })
         .then((result) => {

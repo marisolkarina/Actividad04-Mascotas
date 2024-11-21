@@ -46,7 +46,9 @@
                                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                             <button type="submit" class="btn btn-secondary mt-2">Actualizar</button>
                                         </form>
-                                         
+                                        <!--viendo el stock-->
+                                        <label for="">Stock</label>
+                                        <span><%= item.idProducto.stock %></span>
                                     </td>
                                     <% if (item.idProducto.descuento.valor !== 0 && item.idProducto.descuento.fechaExpiracion > new Date()) { %>
                                         <!-- Precio unitario con descuento-->

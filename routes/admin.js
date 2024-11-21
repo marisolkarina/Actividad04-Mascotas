@@ -31,7 +31,9 @@ router.post('/crear-producto',
         body('categoria')
             .notEmpty().withMessage('La categoría no puede estar vacía'),
         body('descripcion')
-            .isLength({ min: 10, max: 1000 })
+            .isLength({ min: 10, max: 1000 }),
+        body('stock')
+            .isInt().withMessage('El stock debe ser un número entero.')
     ]
     , isAuth, adminController.postCrearProducto);
 
@@ -57,7 +59,9 @@ router.post('/editar-producto',
         body('categoria')
             .notEmpty().withMessage('La categoría no puede estar vacía'),
         body('descripcion')
-            .isLength({ min: 10, max: 1000 })
+            .isLength({ min: 10, max: 1000 }),
+        body('stock')
+            .isInt().withMessage('El stock debe ser un número entero.')
     ]
 
     , isAuth, adminController.postEditarProducto);
