@@ -17,7 +17,7 @@ router.post('/eliminar-publicacion', isAuth, blogController.postEliminarPublicac
 
 router.get('/blog/:idPublicacion', blogController.getPublicacion);
 
-router.post('/comentar', isAuth, blogController.postComentar);
-router.post('/eliminar-comentario', isAuth, blogController.postEliminarComentario);
+router.post('/blog/comentar', isAuth, blogController.postComentar);
+router.post('/blog/eliminar-comentario', isAuth, blogController.postEliminarComentario);
 
 module.exports = router;

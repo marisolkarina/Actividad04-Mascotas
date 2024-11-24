@@ -64,4 +64,8 @@ router.get('/promociones', tiendaController.getPromociones);
 //Detalles de mi cuenta
 router.get('/detalles-cuenta', isAuth, tiendaController.getDetallesCuenta);
 
+// Reseña, comentarios del producto
+router.post('/producto/comentar', isAuth, tiendaController.postComentar);
+router.post('/producto/eliminar-comentario', isAuth, tiendaController.postEliminarComentario);
+
 module.exports = router;

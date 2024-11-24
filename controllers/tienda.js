@@ -184,14 +184,54 @@ exports.getProducto = (req, res, next) => {
             res.render('tienda/producto-detalle', {
                 producto: producto,
                 titulo: producto.nombre,
-                path: `/productos/:${idProducto}`,
-                autenticado: req.session.autenticado
+                path: '/productos',
+                autenticado: req.session.autenticado,
+                comentarios: producto.comentarios,
+                usuario: req.usuario
             });
         }).catch((err) => {
             const error = new Error(err);
             error.httpStatusCode = 500;
             return next(error);
         });
+}
+
+//comentarios acerca del producto
+
+exports.postComentar = (req, res) => {
+    const contenido = req.body.comentario;
+    const usuario = req.usuario;
+    const idProducto = req.body.idProducto;
+
+    Producto.findById(idProducto)
+        .then((producto) => {
+            return producto.agregarComentario(contenido, usuario);
+        })
+        .then((result) => {
+            res.redirect(`/productos/${idProducto}`);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
+
+exports.postEliminarComentario = (req, res, next) => {
+    const idProducto = req.body.idProducto;
+    const idUsuario = req.usuario._id;
+    const fechaComentario = req.body.fechaComentario;
+    const role = req.usuario.role;
+    Producto.findById(idProducto)
+        .then((producto) => {
+            
+            return producto.deleteComentario(idUsuario, fechaComentario, role);
+        })
+        .then((result) => {
+            res.redirect(`/productos/${idProducto}`);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
 }
 
 //mostrar productos buscados por palabra

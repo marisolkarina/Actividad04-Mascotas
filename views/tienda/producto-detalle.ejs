@@ -27,8 +27,33 @@
             <p class="text-center mt-2"><%= producto.descripcion %></p>
             
         </div>
-    </div> 
-
     </div>
+
+    <% if (comentarios.length > 0) { %>
+        <h5 class="text-center">Comentarios</h5>
+        <% for (let comment of comentarios) { %>
+        <div class="card w-75 m-auto">
+            <div class="d-flex ">
+                <p class="text-center m-3"><%= comment.usuario.nombre %>: </p>
+                <p class="text-center m-3"><%= comment.contenido %></p>
+                <p class="text-center m-3"><%= new Date(comment.fechaComentario).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'long' }) %></p>
+                
+                <% if (autenticado && (comment.usuario.idUsuario.toString() === usuario._id.toString() || usuario.role === 'admin')) { %>
+                    <form action="/producto/eliminar-comentario" method="POST">
+                        <input type="hidden" value="<%= producto._id %>" name="idProducto">
+                        <input type="hidden" value="<%= comment.fechaComentario %>" name="fechaComentario">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button class="btn btn-link">Eliminar</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+
+        <% } %>
+    <% } else { %>
+        <h5 class="text-center">No hay comentarios</h5>
+    <% } %>
+
+    <%- include('../includes/comentar-producto.ejs', {nombreUsuario: usuario.nombre}) %>
     
 <%- include('../includes/end.ejs') %>

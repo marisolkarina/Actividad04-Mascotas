@@ -74,6 +74,7 @@ exports.postCrearProducto = (req, res,next) => {
                 },
                 categoria: categoria,
                 color: color,
+                stock: stock,
                 _id: idProducto
             },
         });
@@ -120,6 +121,7 @@ exports.postCrearProducto = (req, res,next) => {
         categoria: categoria,
         color: color,
         stock: stock,
+        comentarios: [],
         idUsuario: req.usuario._id
     });
 
