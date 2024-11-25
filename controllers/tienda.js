@@ -491,9 +491,7 @@ exports.postMisPedidos = (req, res, next) => {
             res.redirect('/pedidos');
         })
         .catch((err) => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return next(error);
+            console.log(err)
         });
 }
 
@@ -512,7 +510,7 @@ exports.postCancelarPedido = (req, res) => {
         .catch((err) => {
             const error = new Error(err);
             error.httpStatusCode = 500;
-            return next(error);
+            
         });
 }
 
@@ -575,7 +573,7 @@ exports.getComprobante = (req, res, next) => {
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader(
                 'Content-Disposition',
-                'inline; filename="' + nombreComprobante + '"'
+                'attachment ; filename="' + nombreComprobante + '"'
             );
             pdfDoc.pipe(fs.createWriteStream(rutaComprobante));
             pdfDoc.pipe(res);
@@ -587,8 +585,10 @@ exports.getComprobante = (req, res, next) => {
             let precioTotal = 0;
             pedido.productos.forEach(prod => {
                 let precioProd = Number(prod.producto.precio);
-                if (prod.descuento.valor !== 0) precioProd = precioProd - (precioProd*prod.producto.descuento.valor)/100;
-
+                if (prod.producto.descuento && prod.producto.descuento.valor && prod.producto.descuento.fechaExpiracion > new Date()) {
+                    precioProd = precioProd - (precioProd * prod.producto.descuento.valor) / 100;
+                }
+                
                 precioTotal += prod.cantidad * precioProd;
                 pdfDoc
                     .fontSize(12)
