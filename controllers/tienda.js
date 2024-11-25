@@ -60,8 +60,17 @@ exports.getIndex = (req, res, next) => {
 exports.getProductosPorCategoria = (categoria) => {
 
     return (req, res) => {
+        const pagina = +req.query.pagina || 1;
+        let nroProductos;
 
         Producto.find()
+            .countDocuments()
+            .then((nroDocs) => {
+                nroProductos = nroDocs;
+                return Producto.find()
+                    .skip((pagina-1) * ITEMS_POR_PAGINA)
+                    .limit(ITEMS_POR_PAGINA)
+            })
             .then((productosObtenidos) => {
                 const productosFiltrados = productosObtenidos.filter(producto =>
                     producto.categoria.toLowerCase() === categoria.toLowerCase()
@@ -71,7 +80,13 @@ exports.getProductosPorCategoria = (categoria) => {
                     prods: productosFiltrados,
                     titulo: `${categoria}`,
                     path: `/productos/${categoria}`,
-                    autenticado: req.session.autenticado
+                    autenticado: req.session.autenticado,
+                    paginaActual: pagina,
+                    tienePaginaSiguiente: ITEMS_POR_PAGINA * pagina < nroProductos,
+                    tienePaginaAnterior: pagina > 1,
+                    paginaSiguiente: pagina + 1,
+                    paginaAnterior: pagina - 1,
+                    ultimaPagina: Math.ceil(nroProductos / ITEMS_POR_PAGINA)
                 })
             }).catch((err) => {
                 const error = new Error(err);
@@ -83,10 +98,20 @@ exports.getProductosPorCategoria = (categoria) => {
 
 //Filtrar por precio
 exports.postProductosPorPrecio = (req, res) => {
+    const pagina = +req.query.pagina || 1;
+    let nroProductos;
+
     const precioMin = Number(req.body.min);
     const precioMax = Number(req.body.max);
     
     Producto.find()
+        .countDocuments()
+        .then((nroDocs) => {
+            nroProductos = nroDocs;
+            return Producto.find()
+                .skip((pagina-1) * ITEMS_POR_PAGINA)
+                .limit(ITEMS_POR_PAGINA)
+        })
         .then((productosObtenidos) => {
             let productosFiltrados;
             if(precioMin === 0) {
@@ -101,7 +126,13 @@ exports.postProductosPorPrecio = (req, res) => {
                 prods: productosFiltrados,
                 titulo: 'Productos segun precio',
                 path: '/productos/filtrados-por-precio',
-                autenticado: req.session.autenticado
+                autenticado: req.session.autenticado,
+                paginaActual: pagina,
+                tienePaginaSiguiente: ITEMS_POR_PAGINA * pagina < nroProductos,
+                tienePaginaAnterior: pagina > 1,
+                paginaSiguiente: pagina + 1,
+                paginaAnterior: pagina - 1,
+                ultimaPagina: Math.ceil(nroProductos / ITEMS_POR_PAGINA)
             })
         }).catch((err) => {
             const error = new Error(err);
@@ -112,15 +143,30 @@ exports.postProductosPorPrecio = (req, res) => {
 
 //ordenar productos de menor a mayor precio
 exports.getProductosMenorMayor = (req, res, next) => {
+    const pagina = +req.query.pagina || 1;
+    let nroProductos;
 
     Producto.find()
+        .countDocuments()
+        .then((nroDocs) => {
+            nroProductos = nroDocs;
+            return Producto.find()
+                .skip((pagina-1) * ITEMS_POR_PAGINA)
+                .limit(ITEMS_POR_PAGINA)
+        })
         .then((productosObtenidos) => {
             const productosOrdenados = productosObtenidos.sort((prod1, prod2) => prod1.precio - prod2.precio);
             res.render('tienda/lista-productos', {
                 prods: productosOrdenados,
                 titulo: "Productos ordenados",
                 path: "/productos/ordenar/menor-a-mayor",
-                autenticado: req.session.autenticado
+                autenticado: req.session.autenticado,
+                paginaActual: pagina,
+                tienePaginaSiguiente: ITEMS_POR_PAGINA * pagina < nroProductos,
+                tienePaginaAnterior: pagina > 1,
+                paginaSiguiente: pagina + 1,
+                paginaAnterior: pagina - 1,
+                ultimaPagina: Math.ceil(nroProductos / ITEMS_POR_PAGINA)
 
             });
         }).catch((err) => {
@@ -132,15 +178,30 @@ exports.getProductosMenorMayor = (req, res, next) => {
 }
 //ordenar productos de mayor a menor precio
 exports.getProductosMayorMenor = (req, res, next) => {
+    const pagina = +req.query.pagina || 1;
+    let nroProductos;
 
     Producto.find()
+        .countDocuments()
+        .then((nroDocs) => {
+            nroProductos = nroDocs;
+            return Producto.find()
+                .skip((pagina-1) * ITEMS_POR_PAGINA)
+                .limit(ITEMS_POR_PAGINA)
+        })
         .then((productosObtenidos) => {
             const productosOrdenados = productosObtenidos.sort((prod1, prod2) => prod2.precio - prod1.precio);
             res.render('tienda/lista-productos', {
                 prods: productosOrdenados,
                 titulo: "Productos ordenados",
                 path: "/productos/ordenar/mayor-a-menor",
-                autenticado: req.session.autenticado
+                autenticado: req.session.autenticado,
+                paginaActual: pagina,
+                tienePaginaSiguiente: ITEMS_POR_PAGINA * pagina < nroProductos,
+                tienePaginaAnterior: pagina > 1,
+                paginaSiguiente: pagina + 1,
+                paginaAnterior: pagina - 1,
+                ultimaPagina: Math.ceil(nroProductos / ITEMS_POR_PAGINA)
             });
         }).catch((err) => {
             const error = new Error(err);
@@ -151,7 +212,17 @@ exports.getProductosMayorMenor = (req, res, next) => {
 }
 //ordenar productos alfabeticamente
 exports.getProductosAlfabeticamente = (req, res, next) => {
+    const pagina = +req.query.pagina || 1;
+    let nroProductos;
+
     Producto.find()
+        .countDocuments()
+        .then((nroDocs) => {
+            nroProductos = nroDocs;
+            return Producto.find()
+                .skip((pagina-1) * ITEMS_POR_PAGINA)
+                .limit(ITEMS_POR_PAGINA)
+        })
         .then((productosObtenidos) => {
             const productosOrdenados = productosObtenidos.sort((prod1, prod2) => prod1.nombre.localeCompare(prod2.nombre));
 
@@ -159,7 +230,13 @@ exports.getProductosAlfabeticamente = (req, res, next) => {
                 prods: productosOrdenados,
                 titulo: "Productos ordenados",
                 path: "/productos/ordenar/alfabeticamente",
-                autenticado: req.session.autenticado
+                autenticado: req.session.autenticado,
+                paginaActual: pagina,
+                tienePaginaSiguiente: ITEMS_POR_PAGINA * pagina < nroProductos,
+                tienePaginaAnterior: pagina > 1,
+                paginaSiguiente: pagina + 1,
+                paginaAnterior: pagina - 1,
+                ultimaPagina: Math.ceil(nroProductos / ITEMS_POR_PAGINA)
             });
         }).catch((err) => {
             const error = new Error(err);
@@ -171,8 +248,19 @@ exports.getProductosAlfabeticamente = (req, res, next) => {
 
 // filtrar productos por color
 exports.getProductosPorColor = (color) => {
+
     return (req, res) => {
+        const pagina = +req.query.pagina || 1;
+        let nroProductos;
+
         Producto.find()
+            .countDocuments()
+            .then((nroDocs) => {
+                nroProductos = nroDocs;
+                return Producto.find()
+                    .skip((pagina-1) * ITEMS_POR_PAGINA)
+                    .limit(ITEMS_POR_PAGINA)
+            })
             .then((productosObtenidos) => {
                 const productosFiltrados = productosObtenidos.filter(producto =>
                     producto.color.toLowerCase() === color.toLowerCase()
@@ -182,7 +270,13 @@ exports.getProductosPorColor = (color) => {
                     prods: productosFiltrados,
                     titulo: `${color}`,
                     path: `/productos/${color}`,
-                    autenticado: req.session.autenticado
+                    autenticado: req.session.autenticado,
+                    paginaActual: pagina,
+                    tienePaginaSiguiente: ITEMS_POR_PAGINA * pagina < nroProductos,
+                    tienePaginaAnterior: pagina > 1,
+                    paginaSiguiente: pagina + 1,
+                    paginaAnterior: pagina - 1,
+                    ultimaPagina: Math.ceil(nroProductos / ITEMS_POR_PAGINA)
                 })
             }).catch((err) => {
                 const error = new Error(err);
