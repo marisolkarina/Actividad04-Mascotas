@@ -3,12 +3,12 @@ const ITEMS_POR_PAGINA = 2;
 
 exports.getPublicaciones = (req, res) => {
     const pagina = +req.query.pagina || 1;
-    let nroProductos;
+    let nroPublicaciones;
 
     Publicacion.find()
         .countDocuments()
         .then((nroDocs) => {
-            nroProductos = nroDocs;
+            nroPublicaciones = nroDocs;
             return Publicacion.find()
                 .skip((pagina-1) * ITEMS_POR_PAGINA)
                 .limit(ITEMS_POR_PAGINA)
@@ -28,11 +28,11 @@ exports.getPublicaciones = (req, res) => {
                 usuario: req.usuario,
                 usuario: req.usuario,
                 paginaActual: pagina,
-                tienePaginaSiguiente: ITEMS_POR_PAGINA * pagina < nroProductos,
+                tienePaginaSiguiente: ITEMS_POR_PAGINA * pagina < nroPublicaciones,
                 tienePaginaAnterior: pagina > 1,
                 paginaSiguiente: pagina + 1,
                 paginaAnterior: pagina - 1,
-                ultimaPagina: Math.ceil(nroProductos / ITEMS_POR_PAGINA)
+                ultimaPagina: Math.ceil(nroPublicaciones / ITEMS_POR_PAGINA)
             });
         }).catch((err) => {
             console.log(err);
