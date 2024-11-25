@@ -68,4 +68,9 @@ router.get('/detalles-cuenta', isAuth, tiendaController.getDetallesCuenta);
 router.post('/producto/comentar', isAuth, tiendaController.postComentar);
 router.post('/producto/eliminar-comentario', isAuth, tiendaController.postEliminarComentario);
 
+//Lista de deseos
+router.get('/lista-deseos', isAuth, tiendaController.getMiListaDeseos);
+router.post('/agregar-lista-deseos', isAuth, tiendaController.postAgregarListaDeseos);
+router.post('/eliminar-prod-lista-deseos', isAuth, tiendaController.postEliminarProdListaDeseos);
+
 module.exports = router;

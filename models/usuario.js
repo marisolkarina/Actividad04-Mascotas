@@ -36,7 +36,12 @@ const usuarioSchema = new Schema({
             type: Number, 
             required: true
         }
-    }
+    },
+    listaDeseos: [
+        {
+            idProducto: { type: Schema.Types.ObjectId, ref: 'Producto' }
+        }
+    ]
 })
 
 
@@ -156,5 +161,25 @@ usuarioSchema.methods.limpiarCarrito = function() {
     this.carrito = { items: [], precioTotal: 0 };
     return this.save();
 };
+
+
+usuarioSchema.methods.agregarAListaDeseos = function(idProducto) {
+    const indiceProducto = this.listaDeseos.findIndex((pl) => {
+        return pl.idProducto.toString() === idProducto.toString();
+    });
+
+    if (indiceProducto < 0) {
+        this.listaDeseos.push({ idProducto: idProducto });
+    }
+
+    return this.save();
+}
+
+usuarioSchema.methods.deleteProdListaDeseos = function(idProducto) {
+    this.listaDeseos = this.listaDeseos.filter((pl) =>
+        pl.idProducto.toString() !== idProducto.toString()
+    );
+    return this.save();
+}
 
 module.exports = mongoose.model('Usuario', usuarioSchema);

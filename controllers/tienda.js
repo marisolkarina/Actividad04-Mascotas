@@ -499,3 +499,57 @@ exports.getComprobante = (req, res, next) => {
         })
         .catch(err => next(err));
 };
+
+// Lista de deseos
+
+exports.getMiListaDeseos = (req, res, next) => {
+    req.usuario
+        .populate('listaDeseos.idProducto')
+        .then((usuario) => {
+            const productosEnListaDeseos = usuario.listaDeseos;
+            res.render('user/lista-deseos', {
+                path: '/lista-deseos',
+                titulo: 'Mi Lista de Deseos',
+                productosEnListaDeseos: productosEnListaDeseos,
+                autenticado: req.session.autenticado,
+                usuario: req.usuario
+            })
+        })
+        .catch((err) => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
+}
+
+exports.postAgregarListaDeseos = (req, res, next) => {
+    const idProducto = req.body.idProducto;
+
+    Producto.findById(idProducto)
+        .then((producto) => {
+            return req.usuario.agregarAListaDeseos(idProducto);
+        })
+        .then((result) => {
+            res.redirect('/lista-deseos');
+        })
+        .catch((err) => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
+}
+
+exports.postEliminarProdListaDeseos = (req, res, next) => {
+    const idProducto = req.body.idProducto;
+
+    Producto.findById(idProducto)
+        .then((producto) => {
+            return req.usuario.deleteProdListaDeseos(idProducto);
+        })
+        .then((result) => {
+            res.redirect('/lista-deseos');
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
