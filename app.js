@@ -114,13 +114,12 @@ app.use((err, req, res, next) => {
 mongoose
   .connect(MONGODB_URI)
   .then(result => {
-    // console.log(result);
     Usuario.findOne().then((usuario) => {
       if (!usuario) {
         const usuario = new Usuario({
           nombre: 'Marisol Pachauri',
-          email: 'mpachaurir@uni.pe',
-          password: 'Admin01!',
+          email: 'mpachaurir@uni.pe', // espinozaromero1999@gmail.com
+          password: 'Admin01!',   // Usuario01!
           role: 'admin',
           carrito: {
             items: [],
