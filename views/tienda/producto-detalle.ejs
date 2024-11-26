@@ -54,6 +54,8 @@
         <h5 class="text-center">No hay comentarios</h5>
     <% } %>
 
-    <%- include('../includes/comentar-producto.ejs', {nombreUsuario: usuario.nombre}) %>
+    <% if (autenticado) { %>
+        <%- include('../includes/comentar-producto.ejs', {nombreUsuario: usuario.nombre}) %>
+    <% } %>
     
 <%- include('../includes/end.ejs') %>
