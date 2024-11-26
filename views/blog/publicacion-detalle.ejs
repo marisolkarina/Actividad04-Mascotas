@@ -56,8 +56,9 @@
         <% } else { %>
             <h5 class="text-center">No hay comentarios</h5>
         <% } %>
-
-        <%- include('../includes/comentar-publicacion.ejs', {nombreUsuario: usuario.nombre}) %>
+        <% if (autenticado) { %>
+            <%- include('../includes/comentar-publicacion.ejs', {nombreUsuario: usuario.nombre}) %>
+        <% } %>
     </main>
         
     <%- include('../includes/end.ejs') %>
