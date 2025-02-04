@@ -29,6 +29,7 @@ router.get('/productos/azul', tiendaController.getProductosPorColor('azul'));
 router.get('/productos/celeste', tiendaController.getProductosPorColor('celeste'));
 router.get('/productos/blanco', tiendaController.getProductosPorColor('blanco'));
 router.get('/productos/marron', tiendaController.getProductosPorColor('marron'));
+router.get('/productos/verde', tiendaController.getProductosPorColor('verde'));
 
 //ver detalle de producto
 router.get('/productos/:idProducto', tiendaController.getProducto);

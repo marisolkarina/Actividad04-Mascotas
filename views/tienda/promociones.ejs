@@ -6,16 +6,16 @@
     <%- include('../includes/navigation.ejs') %>
 
     <div class="mx-4">
-        <div class="row">
+        <div class="row justify-content-center">
             
             <h4 class="text-center">Ofertas relámpago</h4>
             <main class="col-11 d-flex flex-column align-items-end">
                         
                 <div class="container">
                     <% if (prods.length > 0) { %>
-                        <div class="row m-3">
+                        <div class="row m-3 justify-content-center">
                             <% for (let producto of prods) { %>
-                                <div class="col-md-4 mb-2">
+                                <div class="col-md-4 mb-2 d-flex justify-content-center">
                                     <div class="card" style="width: 18rem;">
                                         <h5 class="card-title text-center mt-2 bg-warning-subtle">Descuento: <%= - producto.descuento.valor %> %</h5>
                                         <p>Disponible hasta: <%= producto.descuento.fechaExpiracion %></p>

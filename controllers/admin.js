@@ -238,7 +238,7 @@ exports.postEditarProducto = (req, res, next) => {
             producto.nombre = nombre;
             if (imagen) {
                 file.deleteFile(producto.urlImagen);
-                producto.urlImagen = imagen.path;
+                producto.urlImagen = `imagenes/${req.file.filename}`;
             }
             producto.descripcion = descripcion;
             producto.precio = precio;
@@ -258,11 +258,13 @@ exports.postEditarProducto = (req, res, next) => {
             error.httpStatusCode = 500;
             return next(error);
         });
+
 };
 
 exports.postEliminarProducto = (req, res, next) => {
 
     const idProducto = req.body.idProducto;
+
     if (req.usuario.role !== 'admin') {
         return res.redirect('/');
     }
@@ -283,6 +285,7 @@ exports.postEliminarProducto = (req, res, next) => {
             error.httpStatusCode = 500;
             return next(error);
         });
+
 };
 
 
