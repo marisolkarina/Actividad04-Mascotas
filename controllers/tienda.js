@@ -633,11 +633,12 @@ exports.getMiListaDeseos = (req, res, next) => {
 }
 
 exports.postAgregarListaDeseos = (req, res, next) => {
-    const idProducto = req.body.idProducto;
 
-    Producto.findById(idProducto)
-        .then((producto) => {
-            return req.usuario.agregarAListaDeseos(idProducto);
+    req.usuario
+        .populate('listaDeseos.idProducto')
+        .then((result) => {
+            const idProducto = req.body.idProducto;
+            req.usuario.agregarAListaDeseos(idProducto);
         })
         .then((result) => {
             res.redirect('/lista-deseos');
