@@ -1,57 +1,69 @@
+// Importación de modelos y dependencias necesarias
 const Pedido = require('../models/pedido');
 const Producto = require('../models/producto');
-const Usuario = require('../models/usuario')
+const Usuario = require('../models/usuario');
+const { createAccountLimiter, productLimiter } = require('../middleware/rateLimiter');
 
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
-const file = require('../utils/file')
+const file = require('../utils/file');
 
 
 //Administracion de Productos
-
-exports.getProductos = (req, res,next) => {
-
-    Producto
-        .find()
-        .then((productos) => {
-            res.render('admin/productos', {
-                prods: productos,
-                titulo: "Administracion de Productos",
-                path: "/admin/productos",
-                autenticado: req.session.autenticado
+exports.getProductos = [
+    productLimiter,
+    (req, res, next) => {
+        Producto
+            .find()
+            .then((productos) => {
+                res.render('admin/productos', {
+                    prods: productos,
+                    titulo: "Administracion de Productos",
+                    path: "/admin/productos",
+                    autenticado: req.session.autenticado
+                });
+            }).catch((err) => {
+                const error = new Error(err);
+                error.httpStatusCode = 500;
+                return next(error);
             });
-        }).catch((err) => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return next(error);
+    }
+];
+
+exports.getCrearProducto = [
+    productLimiter,
+    (req, res, next) => {
+        // Verificación de rol de administrador
+        if (req.usuario.role !== 'admin') {
+            return res.redirect('/');
+        }
+
+        res.render('admin/crear-editar-producto', {
+            titulo: 'Crear Producto',
+            path: '/admin/crear-producto',
+            autenticado: req.session.autenticado,
+            modoEdicion: false,
+            mensajeError: null,
+            tieneError: false,
+            validationErrors: []
         });
+    }
+];
 
-};
-
-exports.getCrearProducto = (req, res,next) => {
-    res.render('admin/crear-editar-producto', {
-        titulo: 'Crear Producto',
-        path: '/admin/crear-producto',
-        autenticado: req.session.autenticado,
-        modoEdicion: false,
-        mensajeError : null,
-        tieneError:false,
-        validationErrors: []
-    })
-};
-
-exports.postCrearProducto = (req, res,next) => {
-    const idProducto = req.body.idProducto;
-    const nombre = req.body.nombre;
-    const precio = Number(req.body.precio);
-    const descuento = Number(req.body.descuento);
-    const fechaExpiracion = req.body.fechaExpiracion;
-    const descripcion = req.body.descripcion;
-    const categoria = req.body.categoria;
-    const color = req.body.color;
-    const stock = req.body.stock;
-    const imagen = req.file;
+exports.postCrearProducto = [
+    productLimiter,
+    (req, res, next) => {
+        const idProducto = req.body.idProducto;
+        const nombre = req.body.nombre;
+        const precio = Number(req.body.precio);
+        const descuento = Number(req.body.descuento);
+        const fechaExpiracion = req.body.fechaExpiracion;
+        const descripcion = req.body.descripcion;
+        const categoria = req.body.categoria;
+        const color = req.body.color;
+        const stock = req.body.stock;
+        const imagen = req.file;
 
     let urlImagen = '';
     if (imagen) urlImagen = imagen.path;
@@ -140,7 +152,8 @@ exports.postCrearProducto = (req, res,next) => {
             error.httpStatusCode = 500;
             return next(error);
         });
-};
+}
+];
 
 exports.getEditarProducto = (req, res,next) => {
     const idProducto = req.params.idProducto;
@@ -307,67 +320,76 @@ exports.getUsuarios = (req, res,next) => {
 
 };
 
-exports.getCrearUsuario = (req, res,next) => {
-    if (req.usuario.role !== 'admin') {
-        return res.redirect('/');
-    }
-    const errors = validationResult(req).array();
-    res.render('admin/crear-editar-usuario', {
-        titulo: 'Crear usuario',
-        path: '/admin/crear-usuario',
-        modoEdicion: false,
-        autenticado: req.session.autenticado,
-        mensajeError: '',
-        validationErrors: errors
-    })
-};
-
-exports.postCrearUsuario = (req, res,next) => {
-
-    const { nombre, dni, email, password, role } = req.body;
-    // Captura los errores de validación
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.log(errors.array());
-        return res.status(422).render('admin/crear-editar-usuario', {
-            path: '/admin/crear-usuario',
+exports.getCrearUsuario = [
+    createAccountLimiter,
+    (req, res, next) => {
+        // Verificación de rol de administrador
+        if (req.usuario.role !== 'admin') {
+            return res.redirect('/');
+        }
+        
+        // Obtención de errores de validación
+        const errors = validationResult(req).array();
+        
+        // Renderización del formulario de creación
+        res.render('admin/crear-editar-usuario', {
             titulo: 'Crear usuario',
+            path: '/admin/crear-usuario',
             modoEdicion: false,
-            mensajeError: errors.array()[0].msg,
-            validationErrors: errors.array(),
-
-            usuario: {
-                nombre: nombre,
-                email: email,
-                dni: dni,
-                role: role,
-                password: password
-            },
+            autenticado: req.session.autenticado,
+            mensajeError: '',
+            validationErrors: errors
         });
     }
+];
 
-    // Cifrar la contraseña y guardar el usuario
-    bcrypt.hash(password, 12)
-        .then((hashedPassword) => {
-            const usuario = new Usuario({
-                nombre,
-                dni,
-                email,
-                password: hashedPassword,
-                role: role,
-                carrito: { items: [], precioTotal: 0 }
+exports.postCrearUsuario = [
+    createAccountLimiter,
+    (req, res, next) => {
+        const { nombre, dni, email, password, role } = req.body;
+        
+        // Validación de entrada de datos
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).render('admin/crear-editar-usuario', {
+                path: '/admin/crear-usuario',
+                titulo: 'Crear usuario',
+                modoEdicion: false,
+                mensajeError: errors.array()[0].msg,
+                validationErrors: errors.array(),
+                usuario: {
+                    nombre: nombre,
+                    email: email,
+                    dni: dni,
+                    role: role,
+                    password: password
+                },
             });
-            return usuario.save();
-        })
-        .then(() => {
-            res.redirect('/admin/usuarios');
-        })
-        .catch((err) => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return next(error);
-        });
-}
+        }
+
+        // Encriptación de contraseña y creación de usuario
+        bcrypt.hash(password, 12)
+            .then((hashedPassword) => {
+                const usuario = new Usuario({
+                    nombre,
+                    dni,
+                    email,
+                    password: hashedPassword,
+                    role: role,
+                    carrito: { items: [], precioTotal: 0 }
+                });
+                return usuario.save();
+            })
+            .then(() => {
+                res.redirect('/admin/usuarios');
+            })
+            .catch((err) => {
+                const error = new Error(err);
+                error.httpStatusCode = 500;
+                return next(error);
+            });
+    }
+];
 
 exports.getEditarUsuario = (req, res,next) => {
 
